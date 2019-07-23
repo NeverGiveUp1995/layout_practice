@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:layout_practice/entities/Message.dart';
-import 'package:layout_practice/entities/User.dart';
+import 'package:layout_practice/modals/Message.dart';
+import 'package:layout_practice/modals/login_modal/User.dart';
 
 class Message {
   User sender; //发送者

@@ -1,15 +1,27 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:layout_practice/utils/Utils.dart';
 
 class NetServer {
-  static String serverHttp = "http://localhost";
-  static int port = 8080;
-  static Dio dio = new Dio();
-
-  static request({url, callback}) async {
+  static Future<Response> request({api, method, params, callback}) async {
+    print("loading。。。。");
+//    String baseUrl = "http://192.168.0.112";
+//    String baseUrl = "http://192.168.1.19";
+    String baseUrl = "http://192.168.1.29";
+    int port = 8080;
+    Dio dio = new Dio();
+    //设置请求url
+    dio.options.baseUrl = baseUrl;
+    // 设置请求超时时长
+    dio.options.connectTimeout = 20000;
     Response response;
-    response = await dio.get(url);
+    if (method is String && method.toLowerCase() == 'get' || method == null) {
+      response = await dio.get("$baseUrl:$port$api", queryParameters: params);
+    } else if (method is String && method.toLowerCase() == 'post') {
+      response = await dio.post("$baseUrl:$port$api", queryParameters: params);
+    }
     callback(response);
     return response;
   }

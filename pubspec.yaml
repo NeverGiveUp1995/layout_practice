@@ -27,14 +27,12 @@ dependencies:
   cupertino_icons: ^0.1.2
   #用于发送请求的包
   dio: ^2.1.10
-  redux: ^3.0.0
-  flutter_redux: ^0.5.3
+  flutter_bloc: ^0.19.0
+  equatable: ^0.2.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-
 
 
 # For information on the generic Dart part of this file, see the
@@ -56,32 +54,35 @@ flutter:
     - images/logo.jpg
     - images/logo2.jpg
     - images/headerImg-man.png
-    - images/headerImg-man.svg
     - images/headerImg-women.png
-    - images/headerImg-women.svg
     - images/bg1.jpg
-  # An image asset can refer to one or more resolution-specific "variants", see
-  # https://flutter.io/assets-and-images/#resolution-aware.
+    # An image asset can refer to one or more resolution-specific "variants", see
+    # https://flutter.io/assets-and-images/#resolution-aware.
 
-  # For details regarding adding assets from package dependencies, see
-  # https://flutter.io/assets-and-images/#from-packages
+    # For details regarding adding assets from package dependencies, see
+    # https://flutter.io/assets-and-images/#from-packages
 
-  # To add custom fonts to your application, add a fonts section here,
-  # in this "flutter" section. Each entry in this list should have a
-  # "family" key with the font family name, and a "fonts" key with a
-  # list giving the asset and other descriptors for the font. For
-  # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
-  #
+    # To add custom fonts to your application, add a fonts section here,
+    # in this "flutter" section. Each entry in this list should have a
+    # "family" key with the font family name, and a "fonts" key with a
+    # list giving the asset and other descriptors for the font. For
+    # example:
+    # fonts:
+    #   - family: Schyler
+    #     fonts:
+    #       - asset: fonts/Schyler-Regular.ttf
+    #       - asset: fonts/Schyler-Italic.ttf
+    #         style: italic
+    #   - family: Trajan Pro
+    #     fonts:
+    #       - asset: fonts/TrajanPro.ttf
+    #       - asset: fonts/TrajanPro_Bold.ttf
+    #         weight: 700
+    #
+    #    - 使用自定义的图标
+  fonts:
+    - family: MyFlutterIcons
+      fonts:
+        - asset: lib/icon_fonts/MyFlutterIcons.ttf
   # For details regarding fonts from package dependencies,
   # see https://flutter.io/custom-fonts/#from-packages

@@ -10,10 +10,7 @@ class Chat extends StatefulWidget {
   }
 
   @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return ChatState(this.title);
-  }
+  ChatState createState() => ChatState(this.title);
 }
 
 class ChatState extends State<Chat> {
@@ -24,7 +21,6 @@ class ChatState extends State<Chat> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,

@@ -1,4 +1,4 @@
-import 'package:layout_practice/entities/utilBean/login_entity.dart';
+import 'package:layout_practice/modals/login_modal/login_entity.dart';
 
 class EntityFactory {
   static T generateOBJ<T>(json) {

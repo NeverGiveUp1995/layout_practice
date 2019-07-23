@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:layout_practice/components/Drawers/Person/PersonDrawer.dart';
 import 'package:layout_practice/components/Header/Header.dart';
 import 'package:layout_practice/components/Tab/Tab.dart';
 import 'package:layout_practice/components/TabViews/MessageListView/MessaeListView.dart';
-import 'package:layout_practice/entities/Message.dart';
-import 'package:layout_practice/entities/User.dart';
+import 'package:layout_practice/modals/Message.dart';
+import 'package:layout_practice/modals/login_modal/User.dart';
+import 'package:layout_practice/blocs/auth/bloc.dart';
 
 class Home extends StatefulWidget {
+  GlobalKey _key = GlobalKey();
+
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -17,6 +22,8 @@ class HomeState extends State<Home> {
   String _pageTitle;
   Color backgroundColor = Color.fromARGB(1, 223, 235, 240); //主页背景色
   Color fontColor = Colors.black54; //字体颜色
+  AuthBloc _authBloc;
+
   static User currentUser = User(
     account: '1000',
     nickname: '夕阳醉了',
@@ -39,8 +46,7 @@ class HomeState extends State<Home> {
         sender: User(
           account: '1003',
           nickname: '赤木刚宪',
-          headerImg:
-              'http://img4.imgtn.bdimg.com/it/u=2666874792,3584839742&fm=26&gp=0.jpg',
+          headerImg: null,
         ),
         addressee: currentUser,
         sendTime: "昨天",
@@ -49,8 +55,7 @@ class HomeState extends State<Home> {
         sender: User(
           account: '1004',
           nickname: '赤木晴子',
-          headerImg:
-              'http://img3.imgtn.bdimg.com/it/u=2604563555,547793014&fm=26&gp=0.jpg',
+          headerImg: null,
         ),
         addressee: currentUser,
         sendTime: "昨天",
@@ -68,8 +73,7 @@ class HomeState extends State<Home> {
         sender: User(
           account: '1006',
           nickname: '安西教练',
-          headerImg:
-              'http://img3.imgtn.bdimg.com/it/u=2107015754,884233333&fm=26&gp=0.jpg',
+          headerImg: null,
         ),
         addressee: currentUser,
         sendTime: "昨天",
@@ -78,8 +82,7 @@ class HomeState extends State<Home> {
         sender: User(
           account: '1007',
           nickname: '宫城良田',
-          headerImg:
-              'http://img3.imgtn.bdimg.com/it/u=3979860023,3763775384&fm=26&gp=0.jpg',
+          headerImg: null,
         ),
         addressee: currentUser,
         sendTime: "昨天",
@@ -88,8 +91,7 @@ class HomeState extends State<Home> {
         sender: User(
           account: '1008',
           nickname: '三井寿',
-          headerImg:
-              'http://img0.imgtn.bdimg.com/it/u=451438783,2484600761&fm=26&gp=0.jpg',
+          headerImg: null,
         ),
         addressee: currentUser,
         sendTime: "昨天",
@@ -98,8 +100,7 @@ class HomeState extends State<Home> {
         sender: User(
           account: '1009',
           nickname: '仙道章',
-          headerImg:
-              'http://img1.imgtn.bdimg.com/it/u=1748499728,411947285&fm=26&gp=0.jpg',
+          headerImg: null,
         ),
         addressee: currentUser,
         sendTime: "昨天",
@@ -108,8 +109,7 @@ class HomeState extends State<Home> {
         sender: User(
           account: '1010',
           nickname: '18号',
-          headerImg:
-              'http://img2.imgtn.bdimg.com/it/u=75374517,1938756785&fm=26&gp=0.jpg',
+          headerImg: null,
         ),
         addressee: currentUser,
         sendTime: "昨天",
@@ -118,8 +118,7 @@ class HomeState extends State<Home> {
         sender: User(
           account: '1011',
           nickname: '悟天',
-          headerImg:
-              'http://img5.imgtn.bdimg.com/it/u=559058475,1643895602&fm=26&gp=0.jpg',
+          headerImg: null,
         ),
         addressee: currentUser,
         sendTime: "昨天",
@@ -128,8 +127,7 @@ class HomeState extends State<Home> {
         sender: User(
           account: '1012',
           nickname: '撒旦',
-          headerImg:
-              'http://img1.imgtn.bdimg.com/it/u=4239236968,3343572289&fm=26&gp=0.jpg',
+          headerImg: null,
         ),
         addressee: currentUser,
         sendTime: "2天前",
@@ -138,8 +136,7 @@ class HomeState extends State<Home> {
         sender: User(
           account: '1013',
           nickname: '琦玉',
-          headerImg:
-              'http://img3.imgtn.bdimg.com/it/u=4215048787,643111704&fm=26&gp=0.jpg',
+          headerImg: null,
         ),
         addressee: currentUser,
         sendTime: "2天前",
@@ -161,74 +158,84 @@ class HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        centerTitle: true,
+    _authBloc = BlocProvider.of<AuthBloc>(context);
+    return BlocBuilder(
+      bloc: _authBloc,
+      builder: (BuildContext context, AuthState _currentState) {
+        return Scaffold(
+          appBar: AppBar(
+            centerTitle: true,
 //        设置阴影辐射范围
-        elevation: 0,
-        leading: Header(
-          width: 30.0,
-          height: 30.0,
-          imgSrc:
-              'https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1177105977,3340879911&fm=26&gp=0.jpg',
-        ),
-        title: Text(
-          _pageTitle, //页面标题
-          textAlign: TextAlign.center,
-          style: TextStyle(color: fontColor),
-        ),
-        iconTheme: IconThemeData(color: fontColor),
-        actions: <Widget>[
+            elevation: 0,
+            leading: Header(
+              width: 30.0,
+              height: 30.0,
+              imgSrc: _currentState.user.headerImg,
+              isMan: true,
+            ),
+            title: Text(
+              _pageTitle, //页面标题
+              textAlign: TextAlign.center,
+              style: TextStyle(color: fontColor),
+            ),
+            iconTheme: IconThemeData(color: fontColor),
+            actions: <Widget>[
 //          隐藏起来的菜单项
-          PopupMenuButton<String>(
-            itemBuilder: (BuildContext context) => <PopupMenuItem<String>>[
-                  PopupMenuItem(
-                    value: 'A',
-                    child: Row(
-                      children: <Widget>[Icon(Icons.add), Text('查找好友')],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'B',
-                    child: Row(
-                      children: <Widget>[Icon(Icons.group), Text('创建群聊')],
-                    ),
-                  ),
-                ],
-            onSelected: (String action) {
-              switch (action) {
-                case 'A':
-                  print("选择了A");
-                  break;
-                case 'B':
-                  print("选择了B");
-                  break;
-              }
-            },
-          ),
-        ],
-      ),
-      body: Center(
-        child: Container(
-          color: backgroundColor,
-          child: TabView(
-            onTabChange: this._changeTitle,
-            titles: titles,
-            tabViews: [
-              MessageListView(messageList: testData),
-              Container(
-                child: Text("暂未开放"),
-              ),
-              Container(
-                child: Text("暂未开放"),
-              ),
-              Container(
-                child: Text("暂未开放"),
+              PopupMenuButton<String>(
+                itemBuilder: (BuildContext context) => <PopupMenuItem<String>>[
+                      PopupMenuItem(
+                        value: 'A',
+                        child: Row(
+                          children: <Widget>[Icon(Icons.add), Text('查找好友')],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 'B',
+                        child: Row(
+                          children: <Widget>[Icon(Icons.group), Text('创建群聊')],
+                        ),
+                      ),
+                    ],
+                onSelected: (String action) {
+                  switch (action) {
+                    case 'A':
+                      print("选择了A");
+                      break;
+                    case 'B':
+                      print("选择了B");
+                      break;
+                  }
+                },
               ),
             ],
           ),
-        ),
-      ),
+          body: Center(
+            child: Container(
+              color: backgroundColor,
+              child: TabView(
+                onTabChange: this._changeTitle,
+                titles: titles,
+                tabViews: [
+                  MessageListView(messageList: testData),
+                  Container(
+                    child: Text("暂未开放"),
+                  ),
+                  Container(
+                    child: Text("暂未开放"),
+                  ),
+                  Container(
+                    child: Text("暂未开放"),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          drawer: Drawer(
+            elevation: 200,
+            child: PersonDrawer(),
+          ),
+        );
+      },
     );
   }
 }
