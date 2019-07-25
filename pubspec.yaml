@@ -56,6 +56,7 @@ flutter:
     - images/headerImg-man.png
     - images/headerImg-women.png
     - images/bg1.jpg
+    - images/empty.png
     # An image asset can refer to one or more resolution-specific "variants", see
     # https://flutter.io/assets-and-images/#resolution-aware.
 

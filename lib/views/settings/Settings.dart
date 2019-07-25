@@ -8,10 +8,7 @@ class Settings extends StatelessWidget {
   List<Widget> _renderSettingType(BuildContext context) {
     List<SettingType> settingList = SettingAll.getSettingList();
     List<Widget> settingTypeWidgets = List();
-    print(
-        "${settingList.toString()}${settingList != null && settingList.length > 0}");
     if (settingList != null && settingList.length > 0) {
-      print("进入_renderSettingType");
       settingList.forEach((item) {
         settingTypeWidgets.add(
           Container(

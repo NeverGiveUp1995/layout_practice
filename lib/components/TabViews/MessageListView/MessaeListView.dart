@@ -92,10 +92,21 @@ class MessageListView extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Container(
+      child: RefreshIndicator(
         child: SingleChildScrollView(
-      child: Column(
-        children: this._renderMessageList(context),
+          physics: AlwaysScrollableScrollPhysics(),
+          child: Column(
+            children: this._renderMessageList(context),
+          ),
+        ),
+        onRefresh: () {
+          Future<String> result = null;
+          result = Future.delayed(Duration(), () {
+            print("正在重新获取消息列表");
+          });
+          return result;
+        },
       ),
-    ));
+    );
   }
 }

@@ -1,8 +1,4 @@
-import 'dart:convert';
-import 'dart:developer';
-import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:layout_practice/utils/Utils.dart';
 
 class NetServer {
   static Future<Response> request({api, method, params, callback}) async {
