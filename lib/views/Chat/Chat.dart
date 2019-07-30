@@ -28,7 +28,7 @@ class ChatState extends State<Chat> {
         //设置阴影辐射范围
         title: Text(
           this._title,
-          style: TextStyle(color: Colors.black54),
+          style: TextStyle(color: Colors.black54, fontSize: 16),
         ),
       ),
       body: Column(

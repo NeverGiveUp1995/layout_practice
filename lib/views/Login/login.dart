@@ -3,14 +3,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:layout_practice/blocs/auth/auth_bloc.dart';
+import 'package:layout_practice/blocs/theme/bloc.dart';
 import 'package:layout_practice/components/Header/Header.dart';
 import 'package:layout_practice/blocs/auth/bloc.dart';
 import 'package:layout_practice/components/tips/loading.dart';
 import 'package:layout_practice/config/my_flutter_app_icons.dart';
+import 'package:layout_practice/modals/theme/Theme.dart' as myThemes;
+import 'package:layout_practice/theme/ThemeData.dart';
+import 'package:layout_practice/utils/Utils.dart';
+import 'dart:convert';
+import 'dart:io';
 
-class Login extends StatelessWidget {
+class Login extends StatefulWidget {
+  @override
+  _LoginState createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
   final GlobalKey _key = GlobalKey();
   AuthBloc _authBloc;
+  ThemeBloc _themeBloc;
+
   final String userName = null; //定义常量帐号
   final String password = null; //定义常量密码
   final Color redColor = Colors.red; //需要用到的颜色
@@ -25,9 +38,59 @@ class Login extends StatelessWidget {
     fontSize: 18,
   );
 
-  @override
-  void didUpdateWidget(Login oldWidget) {
-    print("bloc状态===》${oldWidget._authBloc.currentState.loggedIn}");
+  _initTheme(ThemeBloc _themeBloc) async {
+    myThemes.Theme initTheme = null;
+    var themeJson = null;
+    myThemes.Theme currentTheme = null;
+
+    ///   初始化主题
+    //1.先从本地读取缓存文件，如果换成你文件中有设置的主题，则设置当前默认主题为缓存文件中的主题
+    Future<File> themeFile = Utils.getLocalFile('theme.txt');
+
+    Future<String> themeData = Utils.readContentFromFile(themeFile);
+    await themeData.then((value) {
+      print("初始化读取的数据===》$value");
+      try {
+        themeJson = json.decode(value);
+      } catch (e) {
+        print("异常类型====》$e");
+        if (e is FormatException) {
+          print("当前设置的主题文件已损坏！即将恢复默认设置");
+        }
+      }
+      print("主色调===》${themeJson["mainColor"]}");
+    });
+    if (themeJson != null) {
+      print("进入负值了themeId:${themeJson['themeId']}");
+      try {
+        currentTheme = myThemes.Theme(
+          themeId: themeJson['themeId'],
+          themeName: themeJson['themeName'],
+          mainColor: int.parse(themeJson['mainColor']),
+          titleBarBGColor: int.parse(themeJson['titleBarBGColor']),
+          titleBarTextColor: int.parse(themeJson['titleBarTextColor']),
+          bodyColor: int.parse(themeJson['bodyColor']),
+          bottomColor: int.parse(themeJson['bottomColor']),
+          personDrawerBgColor: int.parse(themeJson['personDrawerBgColor']),
+          contrastColor: int.parse(themeJson['contrastColor']),
+          tipModalTextColor: int.parse(themeJson['tipModalTextColor']),
+          tipModalBgColor: int.parse(themeJson['tipModalBgColor']),
+          auxiliaryColor: int.parse(themeJson['auxiliaryColor']),
+          textColor: int.parse(themeJson['textColor']),
+          shadowColor: int.parse(themeJson['shadowColor']),
+          textFieldCursorColor: int.parse(themeJson['textFieldCursorColor']),
+          selectedColor: int.parse(themeJson['selectedColor']),
+        );
+      } catch (e) {
+        print("当前设置的主题文件已损坏！即将恢复默认设置2");
+      }
+    } else {
+      print("没有进入负值");
+    }
+    initTheme = currentTheme ?? AllThemes().sysDefaultThemes[0];
+    if (_themeBloc.currentState.theme == null) {
+      _themeBloc.dispatch(ToggleTheme(theme: initTheme));
+    }
   }
 
   //处理帐号变化回调,验证合法性
@@ -47,8 +110,10 @@ class Login extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Loading loading = null;
     _authBloc = BlocProvider.of<AuthBloc>(context);
+    _themeBloc = BlocProvider.of<ThemeBloc>(context);
+    Loading loading = null;
+    _initTheme(_themeBloc);
     return Scaffold(
       body: BlocBuilder(
         bloc: _authBloc,

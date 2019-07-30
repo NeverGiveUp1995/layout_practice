@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_custom_bottom_tab_bar/eachtab.dart';
+import 'package:layout_practice/blocs/theme/bloc.dart';
 
 class TabView extends StatefulWidget {
   Color normalColor = Colors.black38; //默认常态的颜色
-  Color selectedColor = Colors.redAccent; //默认选中时的颜色
+  Color selectedColor = Colors.blueAccent; //默认选中时的颜色
   double iconSize = 18;
   double textSize = 10;
   Function onTabChange;
@@ -83,6 +85,7 @@ class TabView extends StatefulWidget {
 }
 
 class TabViewState extends State<TabView> with SingleTickerProviderStateMixin {
+  ThemeBloc _themeBloc;
   TabController _tabController;
   int _selectedIndex;
   Color normalColor; //默认常态的颜色
@@ -136,7 +139,10 @@ class TabViewState extends State<TabView> with SingleTickerProviderStateMixin {
           icon: _selectedIndex == i
               ? Icon(
                   icons[i],
-                  color: this.selectedColor,
+                  color:  _themeBloc.currentState.theme != null &&
+                      _themeBloc.currentState.theme.selectedColor != null
+                  ? _themeBloc.currentState.theme.selectedColor
+                  : selectedColor,
                   size: iconSize,
                 )
               : Icon(
@@ -147,7 +153,10 @@ class TabViewState extends State<TabView> with SingleTickerProviderStateMixin {
           text: titles[i],
           textStyle: TextStyle(
               fontSize: textSize,
-              color: _selectedIndex == i ? selectedColor : null),
+              color: _selectedIndex == i ?  _themeBloc.currentState.theme != null &&
+                      _themeBloc.currentState.theme.selectedColor != null
+                  ? _themeBloc.currentState.theme.selectedColor
+                  : selectedColor : Colors.black54),
           badgeNo: i == 0 ? "13" : "",
           badgeColor: Colors.red,
         ));
@@ -158,19 +167,28 @@ class TabViewState extends State<TabView> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    _themeBloc = BlocProvider.of(context);
     return Scaffold(
       bottomNavigationBar: Container(
+        color: _themeBloc.currentState.theme != null &&
+                _themeBloc.currentState.theme.bottomColor != null
+            ? _themeBloc.currentState.theme.bottomColor
+            : Colors.white,
         height: 64,
         child: Column(
           children: <Widget>[
+//            上边线辐射范围
             Divider(
               height: 2,
             ),
-            new TabBar(
+            TabBar(
               isScrollable: false,
               controller: _tabController,
               indicatorColor: Colors.transparent,
-              labelColor: selectedColor,
+              labelColor: _themeBloc.currentState.theme != null &&
+                      _themeBloc.currentState.theme.selectedColor != null
+                  ? _themeBloc.currentState.theme.selectedColor
+                  : selectedColor,
               labelPadding: EdgeInsets.all(0),
               unselectedLabelColor: normalColor,
               tabs: _renderTabs(),
@@ -179,7 +197,7 @@ class TabViewState extends State<TabView> with SingleTickerProviderStateMixin {
         ),
       ),
       body: TabBarView(
-        physics: NeverScrollableScrollPhysics(), //设置滑动的效果，这个禁用滑动
+//        physics: NeverScrollableScrollPhysics(), //设置滑动的效果，这个禁用滑动
         controller: _tabController,
         children: this.tabViews,
       ),

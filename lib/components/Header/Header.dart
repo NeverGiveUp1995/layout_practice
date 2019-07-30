@@ -88,11 +88,9 @@ class _Header extends State<Header> {
         ),
       ),
       child: ClipOval(
-        child: SizedBox.expand(
-          child: RenderHeaderImg(
-            imgSrc: _imgSrc,
-            isMan: _isMan,
-          ),
+        child: RenderHeaderImg(
+          imgSrc: _imgSrc,
+          isMan: _isMan,
         ),
       ),
     );
