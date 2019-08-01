@@ -9,15 +9,15 @@ class Theme {
   String themeId; //主题id
   String themeName; //主题名称
   Color mainColor; //主色调
-  Color titleBarBGColor; //标题栏色调
-  Color titleBarTextColor; //标题栏色调
-  Color bodyColor; //内容区颜色
+  Color contrastColor; //反差色（与主色调相反）
+  Color titleBarBGColor; //标题栏背景色
+  Color titleBarTextColor; //标题栏文本色
+  Color bodyColor; //内容区背景色
   Color bottomColor; //底部操作拦颜色
   Color personDrawerBgColor; //用户抽屉，背景蒙层色
-  Color contrastColor; //反差色（与主色调相反）
   Color shadowColor; //阴影颜色
   Color textColor; //文本字体颜色
-  Color auxiliaryColor; //辅助色
+  Color settingItemBgColor; //辅助色,(用于设置页面每个设置项背景色)
   Color tipModalBgColor; //提示弹框背景色
   Color tipModalTextColor; //提示弹框的文字颜色
   Color textFieldCursorColor; //文本框光标的颜色
@@ -34,7 +34,7 @@ class Theme {
     @required contrastColor,
     @required shadowColor,
     @required textColor,
-    @required auxiliaryColor,
+    @required settingItemBgColor,
     @required tipModalBgColor,
     @required tipModalTextColor,
     @required textFieldCursorColor,
@@ -73,7 +73,7 @@ class Theme {
       this.bottomColor = bottomColor;
     }
     if (personDrawerBgColor is int) {
-      this.bottomColor = Color(personDrawerBgColor);
+      this.personDrawerBgColor = Color(personDrawerBgColor);
     } else if (personDrawerBgColor is Color) {
       this.personDrawerBgColor = personDrawerBgColor;
     }
@@ -88,10 +88,10 @@ class Theme {
     } else if (textColor is Color) {
       this.textColor = textColor;
     }
-    if (auxiliaryColor is int) {
-      this.auxiliaryColor = Color(auxiliaryColor);
-    } else if (auxiliaryColor is Color) {
-      this.auxiliaryColor = auxiliaryColor;
+    if (settingItemBgColor is int) {
+      this.settingItemBgColor = Color(settingItemBgColor);
+    } else if (settingItemBgColor is Color) {
+      this.settingItemBgColor = settingItemBgColor;
     }
     if (tipModalBgColor is int) {
       this.tipModalBgColor = Color(tipModalBgColor);
@@ -117,22 +117,62 @@ class Theme {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['themeId'] = this.themeId;
-    data['themeName'] = this.themeName;
-    data['titleBarBGColor'] = this.titleBarBGColor.value.toString();
-    data['titleBarTextColor'] = this.titleBarTextColor.value.toString();
-    data['bodyColor'] = this.bodyColor.value.toString();
-    data['bottomColor'] = this.bottomColor.value.toString();
-    data['personDrawerBgColor'] = this.personDrawerBgColor.value.toString();
-    data['mainColor'] = this.mainColor.value.toString();
-    data['contrastColor'] = this.contrastColor.value.toString();
-    data['shadowColor'] = this.shadowColor.value.toString();
-    data['textColor'] = this.textColor.value.toString();
-    data['auxiliaryColor'] = this.auxiliaryColor.value.toString();
-    data['tipModalBgColor'] = this.tipModalBgColor.value.toString();
-    data['tipModalTextColor'] = this.tipModalTextColor.value.toString();
-    data['textFieldCursorColor'] = this.textFieldCursorColor.value.toString();
-    data['selectedColor'] = this.selectedColor.value.toString();
+    data['themeId'] = this.themeId != null ? this.themeId.toString() : 'null';
+    data['themeName'] =
+        this.themeName != null ? this.themeName.toString() : 'null';
+    data['titleBarBGColor'] =
+        this.titleBarBGColor != null && this.titleBarBGColor.value != null
+            ? this.titleBarBGColor.value.toString()
+            : 'null';
+    data['titleBarTextColor'] =
+        this.titleBarTextColor != null && this.titleBarTextColor.value != null
+            ? this.titleBarTextColor.value.toString()
+            : 'null';
+    data['bodyColor'] = this.bodyColor != null && this.bodyColor.value != null
+        ? this.bodyColor.value.toString()
+        : 'null';
+    data['bottomColor'] =
+        this.bottomColor != null && this.bottomColor.value != null
+            ? this.bottomColor.value.toString()
+            : 'null';
+    data['personDrawerBgColor'] = this.personDrawerBgColor != null &&
+            this.personDrawerBgColor.value != null
+        ? this.personDrawerBgColor.value.toString()
+        : 'null';
+    data['mainColor'] = this.mainColor != null && this.mainColor.value != null
+        ? this.mainColor.value.toString()
+        : 'null';
+    data['contrastColor'] =
+        this.contrastColor != null && this.contrastColor.value != null
+            ? this.contrastColor.value.toString()
+            : 'null';
+    data['shadowColor'] =
+        this.shadowColor != null && this.shadowColor.value != null
+            ? this.shadowColor.value.toString()
+            : 'null';
+    data['textColor'] = this.textColor != null && this.textColor.value != null
+        ? this.textColor.value.toString()
+        : 'null';
+    data['settingItemBgColor'] =
+        this.settingItemBgColor != null && this.settingItemBgColor.value != null
+            ? this.settingItemBgColor.value.toString()
+            : 'null';
+    data['tipModalBgColor'] =
+        this.tipModalBgColor != null && this.tipModalBgColor.value != null
+            ? this.tipModalBgColor.value.toString()
+            : 'null';
+    data['tipModalTextColor'] =
+        this.tipModalTextColor != null && this.tipModalTextColor.value != null
+            ? this.tipModalTextColor.value.toString()
+            : 'null';
+    data['textFieldCursorColor'] = this.textFieldCursorColor != null &&
+            this.textFieldCursorColor.value != null
+        ? this.textFieldCursorColor.value.toString()
+        : 'null';
+    data['selectedColor'] =
+        this.selectedColor != null && this.selectedColor.value != null
+            ? this.selectedColor.value.toString()
+            : 'null';
     return data;
   }
 

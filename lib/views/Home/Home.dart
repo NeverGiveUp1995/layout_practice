@@ -4,10 +4,12 @@ import 'package:layout_practice/components/Drawers/Person/PersonDrawer.dart';
 import 'package:layout_practice/components/Header/Header.dart';
 import 'package:layout_practice/components/Tab/Tab.dart';
 import 'package:layout_practice/components/TabViews/MessageListView/MessaeListView.dart';
+import 'package:layout_practice/config/my_flutter_app_icons.dart';
 import 'package:layout_practice/modals/Message.dart';
 import 'package:layout_practice/modals/login_modal/User.dart';
 import 'package:layout_practice/blocs/auth/bloc.dart';
 import 'package:layout_practice/blocs/theme/bloc.dart';
+import 'package:layout_practice/utils/Utils.dart';
 
 class Home extends StatefulWidget {
   GlobalKey _key = GlobalKey();
@@ -222,39 +224,46 @@ class HomeState extends State<Home> {
           actions: <Widget>[
 //          隐藏起来的菜单项
             PopupMenuButton<String>(
+              icon: Icon(
+                Icons.menu,
+                color: _themeBloc.currentState.theme != null &&
+                        _themeBloc.currentState.theme.titleBarTextColor != null
+                    ? _themeBloc.currentState.theme.titleBarTextColor
+                    : fontColor,
+              ),
               offset: Offset(0, 50),
               itemBuilder: (BuildContext context) => <PopupMenuItem<String>>[
                     PopupMenuItem(
                       value: 'A',
-                      child: Row(
-                        children: <Widget>[
-                          Container(
-                            padding: EdgeInsets.only(right: 5),
-                            child: Icon(
-                              Icons.search,
-                              color: _themeBloc.currentState.theme != null &&
-                                      _themeBloc.currentState.theme
-                                              .titleBarTextColor !=
-                                          null
-                                  ? _themeBloc
-                                      .currentState.theme.titleBarTextColor
-                                  : null,
-                              size: 18,
+                      child: Container(
+                        child: Row(
+                          children: <Widget>[
+                            Container(
+                              padding: EdgeInsets.only(right: 5),
+                              child: Icon(
+                                Icons.search,
+                                color: _themeBloc.currentState.theme != null &&
+                                        _themeBloc
+                                                .currentState.theme.textColor !=
+                                            null
+                                    ? _themeBloc.currentState.theme.textColor
+                                    : null,
+                                size: 18,
+                              ),
                             ),
-                          ),
-                          Text(
-                            '查找好友',
-                            style: TextStyle(
-                              color: _themeBloc.currentState.theme != null &&
-                                      _themeBloc.currentState.theme
-                                              .titleBarTextColor !=
-                                          null
-                                  ? _themeBloc
-                                      .currentState.theme.titleBarTextColor
-                                  : null,
-                            ),
-                          )
-                        ],
+                            Text(
+                              '查找好友',
+                              style: TextStyle(
+                                color: _themeBloc.currentState.theme != null &&
+                                        _themeBloc
+                                                .currentState.theme.textColor !=
+                                            null
+                                    ? _themeBloc.currentState.theme.textColor
+                                    : null,
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
                     PopupMenuItem(
@@ -266,11 +275,9 @@ class HomeState extends State<Home> {
                             child: Icon(
                               Icons.supervisor_account,
                               color: _themeBloc.currentState.theme != null &&
-                                      _themeBloc.currentState.theme
-                                              .titleBarTextColor !=
+                                      _themeBloc.currentState.theme.textColor !=
                                           null
-                                  ? _themeBloc
-                                      .currentState.theme.titleBarTextColor
+                                  ? _themeBloc.currentState.theme.textColor
                                   : null,
                               size: 18,
                             ),
@@ -279,11 +286,9 @@ class HomeState extends State<Home> {
                             '创建群聊',
                             style: TextStyle(
                               color: _themeBloc.currentState.theme != null &&
-                                      _themeBloc.currentState.theme
-                                              .titleBarTextColor !=
+                                      _themeBloc.currentState.theme.textColor !=
                                           null
-                                  ? _themeBloc
-                                      .currentState.theme.titleBarTextColor
+                                  ? _themeBloc.currentState.theme.textColor
                                   : null,
                             ),
                           )
@@ -332,7 +337,6 @@ class HomeState extends State<Home> {
           ),
         ),
         drawer: Drawer(
-          elevation: 200,
           child: PersonDrawer(),
         ),
       ),

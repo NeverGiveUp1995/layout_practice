@@ -45,20 +45,17 @@ class _LoginState extends State<Login> {
 
     ///   初始化主题
     //1.先从本地读取缓存文件，如果换成你文件中有设置的主题，则设置当前默认主题为缓存文件中的主题
-    Future<File> themeFile = Utils.getLocalFile('theme.txt');
+    File themeFile = await Utils.getLocalFile('theme.txt');
 
     Future<String> themeData = Utils.readContentFromFile(themeFile);
     await themeData.then((value) {
       print("初始化读取的数据===》$value");
       try {
-        themeJson = json.decode(value);
+        themeJson = value != "0" ? json.decode(value) : null;
+        print("主色调===》${themeJson["mainColor"]}");
       } catch (e) {
-        print("异常类型====》$e");
-        if (e is FormatException) {
-          print("当前设置的主题文件已损坏！即将恢复默认设置");
-        }
+        print("当前设置的主题文件已损坏！即将恢复默认设置");
       }
-      print("主色调===》${themeJson["mainColor"]}");
     });
     if (themeJson != null) {
       print("进入负值了themeId:${themeJson['themeId']}");
@@ -75,12 +72,13 @@ class _LoginState extends State<Login> {
           contrastColor: int.parse(themeJson['contrastColor']),
           tipModalTextColor: int.parse(themeJson['tipModalTextColor']),
           tipModalBgColor: int.parse(themeJson['tipModalBgColor']),
-          auxiliaryColor: int.parse(themeJson['auxiliaryColor']),
+          settingItemBgColor: int.parse(themeJson['settingItemBgColor']),
           textColor: int.parse(themeJson['textColor']),
           shadowColor: int.parse(themeJson['shadowColor']),
           textFieldCursorColor: int.parse(themeJson['textFieldCursorColor']),
           selectedColor: int.parse(themeJson['selectedColor']),
         );
+        print("当前设置的主题信息${currentTheme.themeName}");
       } catch (e) {
         print("当前设置的主题文件已损坏！即将恢复默认设置2");
       }

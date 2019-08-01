@@ -27,7 +27,7 @@ class MessageListView extends StatelessWidget {
   }
 
   List<Widget> _renderMessageList(BuildContext context) {
-    _themeBloc = BlocProvider.of(context);
+    _themeBloc = BlocProvider.of<ThemeBloc>(context);
     List<Widget> messages = [];
     for (int i = 0; i < this.messageList.length; i++) {
       Message item = this.messageList[i];
@@ -132,26 +132,31 @@ class MessageListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _themeBloc = BlocProvider.of(context);
-    return Container(
-      color: _themeBloc.currentState.theme != null
-          ? _themeBloc.currentState.theme.bodyColor
-          : Color(0x000f0f0f),
-      child: RefreshIndicator(
-        child: SingleChildScrollView(
-          physics: AlwaysScrollableScrollPhysics(),
-          child: Column(
-            children: this._renderMessageList(context),
+    _themeBloc = BlocProvider.of<ThemeBloc>(context);
+    return BlocBuilder(
+      bloc: _themeBloc,
+      builder: (BuildContext context, ThemeState _themeState) {
+        return Container(
+          color: _themeBloc.currentState.theme != null
+              ? _themeBloc.currentState.theme.bodyColor
+              : null,
+          child: RefreshIndicator(
+            child: SingleChildScrollView(
+              physics: AlwaysScrollableScrollPhysics(),
+              child: Column(
+                children: this._renderMessageList(context),
+              ),
+            ),
+            onRefresh: () {
+              Future<String> result = null;
+              result = Future.delayed(Duration(), () {
+                print("正在重新获取消息列表");
+              });
+              return result;
+            },
           ),
-        ),
-        onRefresh: () {
-          Future<String> result = null;
-          result = Future.delayed(Duration(), () {
-            print("正在重新获取消息列表");
-          });
-          return result;
-        },
-      ),
+        );
+      },
     );
   }
 }

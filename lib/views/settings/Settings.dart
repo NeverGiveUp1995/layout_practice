@@ -3,6 +3,7 @@
  */
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:layout_practice/blocs/auth/bloc.dart';
 import 'package:layout_practice/blocs/theme/bloc.dart';
 import 'package:layout_practice/components/BackBtn/BackBtn.dart';
 import 'package:layout_practice/utils/consts/SettingAll.dart';
@@ -58,9 +59,9 @@ class Settings extends StatelessWidget {
           Container(
             margin: EdgeInsets.only(top: 4),
             child: RaisedButton(
-              color: _themeBloc.currentState.theme != null &&
-                      _themeBloc.currentState.theme.auxiliaryColor != null
-                  ? _themeBloc.currentState.theme.auxiliaryColor
+              color:  _themeBloc.currentState.theme != null &&
+                  _themeBloc.currentState.theme.settingItemBgColor != null
+                  ? _themeBloc.currentState.theme.settingItemBgColor
                   : null,
               elevation: 0,
               disabledElevation: 0,
@@ -103,36 +104,41 @@ class Settings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _themeBloc = BlocProvider.of<ThemeBloc>(context);
-    return Scaffold(
-      appBar: AppBar(
-        leading: BackBtn(),
-        centerTitle: true,
-        backgroundColor: _themeBloc.currentState.theme != null &&
-                _themeBloc.currentState.theme.mainColor != null
-            ? _themeBloc.currentState.theme.mainColor
-            : null,
-        title: Text(
-          "设置",
-          style: TextStyle(
-            color: _themeBloc.currentState.theme != null &&
-                    _themeBloc.currentState.theme.titleBarTextColor != null
-                ? _themeBloc.currentState.theme.titleBarTextColor
+    return BlocBuilder(
+      bloc: _themeBloc,
+      builder: (BuildContext context, ThemeState _themeState) {
+        return Scaffold(
+          appBar: AppBar(
+            leading: BackBtn(),
+            centerTitle: true,
+            backgroundColor: _themeBloc.currentState.theme != null &&
+                    _themeBloc.currentState.theme.mainColor != null
+                ? _themeBloc.currentState.theme.mainColor
                 : null,
-            fontSize: 16,
-            fontWeight: null,
+            title: Text(
+              "设置",
+              style: TextStyle(
+                color: _themeBloc.currentState.theme != null &&
+                        _themeBloc.currentState.theme.titleBarTextColor != null
+                    ? _themeBloc.currentState.theme.titleBarTextColor
+                    : null,
+                fontSize: 16,
+                fontWeight: null,
+              ),
+            ),
+            elevation: 0,
           ),
-        ),
-        elevation: 0,
-      ),
-      body: Container(
-        color: _themeBloc.currentState.theme != null &&
-                _themeBloc.currentState.theme.bodyColor != null
-            ? _themeBloc.currentState.theme.bodyColor
-            : null,
-        child: Column(
-          children: _renderSettingType(context, _themeBloc),
-        ),
-      ),
+          body: Container(
+            color: _themeBloc.currentState.theme != null &&
+                    _themeBloc.currentState.theme.bodyColor != null
+                ? _themeBloc.currentState.theme.bodyColor
+                : null,
+            child: Column(
+              children: _renderSettingType(context, _themeBloc),
+            ),
+          ),
+        );
+      },
     );
   }
 }

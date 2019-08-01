@@ -11,16 +11,19 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
   @override
   ThemeState get initialState => CurrentThemeState(theme: null);
 
-
   @override
   Stream<ThemeState> mapEventToState(
     ThemeEvent event,
   ) async* {
     if (event is ToggleTheme) {
-      print(event.theme);
+      print("准备将主题：${event.theme.themeName}写入缓存文件中");
       //将当前主题文件写入缓存文件中
-      Future<File> themeFile = Utils.getLocalFile('theme.txt');
-      Utils.writeContentTofile(themeFile, event.theme.toString());
+      File themeFile = await Utils.getLocalFile('theme.txt');
+      Utils.readContentFromFile(themeFile);
+      print("返回的文件===》${themeFile}");
+
+      await Utils.writeContentTofile(themeFile, event.theme.toString());
+      print("写入成功！");
       yield CurrentThemeState(theme: event.theme);
     }
   }

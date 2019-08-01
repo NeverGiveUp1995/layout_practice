@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:layout_practice/blocs/theme/bloc.dart';
 import 'package:layout_practice/components/Header/Header.dart';
 import 'package:layout_practice/blocs/auth/bloc.dart';
+import 'package:layout_practice/utils/Utils.dart';
 
 class PersonDrawer extends StatelessWidget {
   AuthBloc _authBloc;

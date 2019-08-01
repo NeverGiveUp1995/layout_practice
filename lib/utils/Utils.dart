@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
@@ -16,7 +18,7 @@ class Utils {
   /**
    * 读取文件内容
    */
-  static Future<String> readContentFromFile(Future<File> file) async {
+  static Future<String> readContentFromFile(File file) async {
     try {
       String content = await (await file).readAsString();
       return content;
@@ -32,8 +34,14 @@ class Utils {
   /**
    * 将内容写入对应的文件
    */
-  static Future<Null> writeContentTofile(
-      Future<File> file, String writeContent) async {
-    await (await file).writeAsString(writeContent);
+  static Future<Null> writeContentTofile(File file, String writeContent) async {
+    print("即将写入的文件：${file},即将写入的内容：${writeContent}");
+    await file.writeAsString(writeContent);
+    print('写入成功2');
+  }
+
+  static Size getScreenSize() {
+    Size screenSize = MediaQueryData.fromWindow(window).size;
+    return screenSize;
   }
 }

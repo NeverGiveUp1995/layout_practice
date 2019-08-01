@@ -18,7 +18,7 @@ class AllThemes {
       themeName: '简洁白',
       contrastColor: Colors.black87,
       shadowColor: Colors.black12,
-      auxiliaryColor: Color.fromARGB(1, 223, 235, 240),
+      settingItemBgColor: Colors.white,
       mainColor: Colors.white,
       titleBarBGColor: Colors.white,
       titleBarTextColor: Colors.black54,
@@ -36,26 +36,26 @@ class AllThemes {
       themeName: '天空蓝',
       mainColor: Color(0xff00a4ff),
       contrastColor: Color(0x99ffffff),
-      titleBarBGColor: Colors.white,
+      titleBarBGColor: Color(0xff00a4ff),
       titleBarTextColor: Colors.white,
-      bodyColor: Color(0xffefefef),
+      bodyColor: Color(0x000e0e0e),
       bottomColor: Colors.white,
       personDrawerBgColor: Color(0xaa898989),
-      shadowColor: Color(0x44ffffff),
+      shadowColor: Color(0x44dedede),
       textColor: Color(0xff696969),
-      auxiliaryColor: Color(0x55eeeeee),
+      settingItemBgColor: Colors.white,
       tipModalBgColor: Colors.black54,
       tipModalTextColor: Colors.black12,
       textFieldCursorColor: Color(0xff00a4ff),
       //文本框光标的颜色
       selectedColor: Color(0xff00a4ff),
     );
-    myTheme.Theme yahei = myTheme.Theme(
+    myTheme.Theme eleganceBlack = myTheme.Theme(
       themeId: '2',
       themeName: '雅黑',
       contrastColor: Color(0x99ffffff),
       shadowColor: Color(0x66000000),
-      auxiliaryColor: Colors.black12,
+      settingItemBgColor: Colors.black12,
       mainColor: Color(0xff373e48),
       titleBarBGColor: Color(0xff373e48),
       titleBarTextColor: Color(0xffcdcdcd),
@@ -68,8 +68,29 @@ class AllThemes {
       textFieldCursorColor: Color(0xffeeeeee),
       selectedColor: Color(0xffcecece),
     );
-
-    _sysDefaultThemes..add(simpleWhite)..add(skyBlue)..add(yahei);
+    myTheme.Theme red = myTheme.Theme(
+      themeId: "3",
+      themeName: "艳红",
+      mainColor: Colors.redAccent,
+      titleBarBGColor: Colors.redAccent,
+      titleBarTextColor: Colors.white,
+      bodyColor: Color(0x000e0e0e),
+      bottomColor: Colors.redAccent,
+      personDrawerBgColor: Color(0xefffffff),
+      contrastColor: Colors.white,
+      shadowColor: Color(0x00dedede),
+      textColor: Colors.black54,
+      settingItemBgColor: Colors.white,
+      tipModalBgColor: Color(0x22ef0000),
+      tipModalTextColor: Colors.black54,
+      textFieldCursorColor: Colors.redAccent,
+      selectedColor: Colors.white,
+    );
+    _sysDefaultThemes
+      ..add(simpleWhite)
+      ..add(skyBlue)
+      ..add(eleganceBlack)
+      ..add(red);
 //    用户下载的数据，要从本地获取，（暂无）当用户下载了之后，需要将下载的所有主题，写入一个文件，存放在本地，然后，在此处自动读取该文件，暂时还未实现
   }
 }
