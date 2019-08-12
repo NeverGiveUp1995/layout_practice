@@ -41,6 +41,8 @@ dev_dependencies:
   build_runner: ^1.0.0
   #json序列化自动生成代码的库
   json_serializable: ^2.2.1
+  # webSocket通信的库
+  web_socket_channel: ^1.0.14
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec

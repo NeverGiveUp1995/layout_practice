@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:layout_practice/blocs/webSocket/bloc.dart';
 import 'package:layout_practice/modals/login_modal/login_entity.dart';
+import 'package:layout_practice/utils/Utils.dart';
 import 'package:layout_practice/utils/request.dart';
 import './bloc.dart';
 import 'package:layout_practice/blocs/auth/bloc.dart';
@@ -21,7 +23,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthEvent event,
   ) async* {
     if (event is LoginEvent) {
-      LoginEntity loginEntity;
       yield UserState(
         user: null,
         loading: true,
@@ -45,7 +46,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         if (loginEntity.status == "1" || loginEntity.status == 1) {
           if (loginEntity.data != null) {
             print("用户信息：：：：${loginEntity.data.nickName}");
-            Navigator.pushNamed(event.buildContext, '/home');
+            Navigator.pushReplacementNamed(event.buildContext, '/home');
             yield UserState(
               user: loginEntity.data,
               loading: false,

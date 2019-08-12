@@ -4,14 +4,24 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class Utils {
   /**
    * 根据文件名称获取文件
    */
   static Future<File> getLocalFile(String filename) async {
-    String dir = (await getApplicationDocumentsDirectory()).path;
-    print("文件路径====>$dir");
+//    String dir = (await getApplicationDocumentsDirectory()).path;
+    String dir;
+    try {
+      dir = (await getExternalStorageDirectory()).path;
+    } catch (e) {
+      if (e is UnsupportedError) {
+        dir = (await getApplicationDocumentsDirectory()).path;
+      }
+    }
+    print("文件目录地址$dir");
     return File('$dir/$filename');
   }
 
@@ -35,13 +45,22 @@ class Utils {
    * 将内容写入对应的文件
    */
   static Future<Null> writeContentTofile(File file, String writeContent) async {
-    print("即将写入的文件：${file},即将写入的内容：${writeContent}");
     await file.writeAsString(writeContent);
-    print('写入成功2');
   }
 
   static Size getScreenSize() {
     Size screenSize = MediaQueryData.fromWindow(window).size;
     return screenSize;
+  }
+
+  /**
+   * 连接socket，并且获取socket通信的channel对象
+   */
+  static WebSocketChannel getChannel(String userAccount) {
+    return IOWebSocketChannel.connect(
+      'ws://192.168.1.32:8080/WebSocketServer/${userAccount}',
+//      'ws://192.168.0.123:8080/WebSocketServer/${userAccount}',
+//      'ws://192.168.0.112:8080/WebSocketServer/${userAccount}',
+    );
   }
 }

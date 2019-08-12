@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:layout_practice/blocs/auth/bloc.dart';
+import 'package:layout_practice/blocs/message/bloc.dart';
 import 'package:layout_practice/blocs/theme/bloc.dart';
 import 'package:layout_practice/blocs/theme/theme_bloc.dart';
+import 'package:layout_practice/blocs/webSocket/bloc.dart';
 import 'package:layout_practice/views/CustomTheme/CustomTheme.dart';
 import 'package:layout_practice/views/Home/Home.dart';
 import 'package:layout_practice/views/Login/login.dart';
@@ -27,6 +29,12 @@ class _MyAppState extends State<MyApp> {
         BlocProvider<AuthBloc>(
           builder: (BuildContext context) => AuthBloc(),
         ),
+        BlocProvider<MessageBloc>(
+          builder: (BuildContext context) => MessageBloc(),
+        ),
+        BlocProvider<WebSocketBloc>(
+          builder: (BuildContext context) => WebSocketBloc(),
+        ),
       ],
       child: MaterialApp(
         title: 'weTalk',
@@ -35,7 +43,9 @@ class _MyAppState extends State<MyApp> {
         routes: {
           '/': (context) => Login(),
           //主页
-          '/home': (context) => Home(),
+          '/home': (context) => Home(
+                context: context,
+              ),
           //设置页面
           '/settings': (context) => Settings(),
           //主题设置页面

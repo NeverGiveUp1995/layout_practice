@@ -15,7 +15,6 @@ class CurrentThemeState extends ThemeState {
   myThemes.Theme theme = null;
 
   CurrentThemeState({@required theme}) {
-    print("进入初始化主题的状态控制器$theme");
     if (theme != null) {
       this.theme = theme;
     }
