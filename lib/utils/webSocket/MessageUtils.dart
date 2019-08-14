@@ -14,7 +14,8 @@ class MessageUtils {
     print(
         '\n\n\n===============================【正在创建与服务器的连接。。。】========================================');
     Future<WebSocket> futureWebSocket = WebSocket.connect(
-        'ws://192.168.1.32:8080/WebSocketServer/${userAccount}'); // Api.WS_URL 为服务器端的 websocket 服务
+//        'ws://192.168.1.32:8080/WebSocketServer/${userAccount}'); // Api.WS_URL 为服务器端的 websocket 服务
+        'ws://192.168.0.112:8080/WebSocketServer/${userAccount}'); // Api.WS_URL 为服务器端的 websocket 服务
     futureWebSocket.then((WebSocket ws) {
       _webSocket = ws;
       _webSocket.readyState;
@@ -22,20 +23,28 @@ class MessageUtils {
        * 订阅服务器发送的消息
        */
       void onData(dynamic data) {
-        print("收到服务器发来的消息:$data");
+        print(
+            "=======================================收到服务器发来的消息:==============================================");
+        print('$data\n\n');
         WebSocketBloc webSocketBloc = Provider.of<WebSocketBloc>(context);
         SingleMessageResultEntity singleMessageResultEntity =
             SingleMessageResultEntity.fromJson(json.decode(data));
         Message message = singleMessageResultEntity.data;
-        if (message != null) {
-          //更新数据
-          SingleMessageResultEntity singleMessageResultEntity =
-              SingleMessageResultEntity.fromJson(json.decode(data));
-          Message message = singleMessageResultEntity.data;
-          WebSocketBloc webSocketBloc = Provider.of<WebSocketBloc>(context);
+        print(
+            '=======================封装好的消息==================================');
+        print(singleMessageResultEntity);
+        print(message);
+        if (singleMessageResultEntity.msgType == "1") {
+          if (message != null) {
+            //更新数据
+            SingleMessageResultEntity singleMessageResultEntity =
+                SingleMessageResultEntity.fromJson(json.decode(data));
+            Message message = singleMessageResultEntity.data;
+            WebSocketBloc webSocketBloc = Provider.of<WebSocketBloc>(context);
+            webSocketBloc.dispatch(ReceivedMessageWithFriend(message: message));
+          }
           webSocketBloc.dispatch(ReceivedMessageWithFriend(message: message));
         }
-        webSocketBloc.dispatch(ReceivedMessageWithFriend(message: message));
       }
 
       _webSocket.listen(

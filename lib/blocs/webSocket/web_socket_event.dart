@@ -31,13 +31,12 @@ class ReceivedMessageWithFriend extends WebSocketEvent {
 }
 
 /**
- * 像好友发送消息的事件
+ * 向好友发送消息的事件
  */
 class SendMessageToFriend extends WebSocketEvent {
   Message message;
-  String friendAccount;
 
-  SendMessageToFriend({@required this.friendAccount, this.message});
+  SendMessageToFriend({@required this.message});
 
   @override
   String toString() {

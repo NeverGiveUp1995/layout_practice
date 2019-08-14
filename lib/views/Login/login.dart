@@ -10,14 +10,16 @@ import 'package:layout_practice/components/Header/Header.dart';
 import 'package:layout_practice/blocs/auth/bloc.dart';
 import 'package:layout_practice/components/tips/loading.dart';
 import 'package:layout_practice/config/my_flutter_app_icons.dart';
+import 'package:layout_practice/modals/login_modal/User.dart';
+import 'package:layout_practice/utils/Utils.dart';
 import 'package:layout_practice/modals/theme/Theme.dart' as myThemes;
 import 'package:layout_practice/theme/ThemeData.dart';
 import 'package:layout_practice/utils/Utils.dart';
-import 'package:layout_practice/utils/consts/CacheFloderNames.dart';
+import 'package:layout_practice/utils/consts/CacheFolderNames.dart';
 import 'package:layout_practice/utils/consts/FileNames.dart';
+import 'package:layout_practice/utils/consts/ServerAddresses.dart';
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:layout_practice/utils/webSocket/MessageUtils.dart';
 
 class Login extends StatefulWidget {
@@ -31,7 +33,7 @@ class _LoginState extends State<Login> {
   ThemeBloc _themeBloc;
   MessageBloc _messageBloc;
   WebSocketBloc _webSocketBloc;
-
+  int _selectedServerIndex = 0;
   final String userName = null; //定义常量帐号
   final String password = null; //定义常量密码
   final Color redColor = Colors.red; //需要用到的颜色
@@ -46,24 +48,43 @@ class _LoginState extends State<Login> {
     fontSize: 18,
   );
 
-  _initTheme(ThemeBloc _themeBloc) async {
+  //处理帐号变化回调,验证合法性
+  void _login(AuthBloc authBloc, BuildContext buildContext) {
+    print(
+      "userName:" +
+          userNameController.text +
+          "\n" +
+          "password:" +
+          passwordController.text,
+    );
+    RegExp exp = new RegExp("^1(3|4|5|7|8)\d{9}");
+    print(exp.hasMatch(userNameController.text));
+    _initTheme(_themeBloc, userNameController.text);
+    authBloc.dispatch(
+      LoginEvent(
+          buildContext, userNameController.text, passwordController.text),
+    );
+  }
+
+  _initTheme(ThemeBloc _themeBloc, String userAccount) async {
     myThemes.Theme initTheme = null;
     var themeJson = null;
     myThemes.Theme currentTheme = null;
 
     ///   初始化主题
     //1.先从本地读取缓存文件，如果换成你文件中有设置的主题，则设置当前默认主题为缓存文件中的主题
-    File themeFile =
-        await Utils.getLocalFile('theme_${FileNames.theme.toString()}.txt');
+    File themeFile = await Utils.getLocalFile(
+      userAccount,
+      CacheFolderNames.themes,
+      '${FileNames.theme}.txt',
+    );
 
-    Future<String> themeData = Utils.readContentFromFile(themeFile);
-    await themeData.then((value) {
-      try {
-        themeJson = value != "0" ? json.decode(value) : null;
-      } catch (e) {
-        print("当前设置的主题文件已损坏！即将恢复默认设置");
-      }
-    });
+    String themeData = await Utils.readContentFromFile(themeFile);
+    try {
+      themeJson = themeData != "0" ? json.decode(themeData) : null;
+    } catch (e) {
+      print("当前设置的主题文件已损坏！即将恢复默认设置");
+    }
     if (themeJson != null) {
       try {
         currentTheme = myThemes.Theme(
@@ -92,32 +113,44 @@ class _LoginState extends State<Login> {
     }
     initTheme = currentTheme ?? AllThemes().sysDefaultThemes[0];
     if (_themeBloc.currentState.theme == null) {
-      _themeBloc.dispatch(ToggleTheme(theme: initTheme));
+      _themeBloc.dispatch(ToggleTheme(
+        theme: initTheme,
+        currentUser: User(account: userAccount),
+      ));
     }
   }
 
-  //处理帐号变化回调,验证合法性
-  void _login(AuthBloc authBloc, BuildContext buildContext) {
-    print(
-      "userName:" +
-          userNameController.text +
-          "\n" +
-          "password:" +
-          passwordController.text,
-    );
-    RegExp exp = new RegExp("^1(3|4|5|7|8)\d{9}");
-    print(exp.hasMatch(userNameController.text));
-    authBloc.dispatch(
-      LoginEvent(
-          buildContext, userNameController.text, passwordController.text),
-    );
-    //创建webSocket连接
-//    _webSocketBloc.dispatch(
-//      SetWebSocket(
-//        channel: Utils.getChannel(userNameController.text),
-//      ),
-//    );
-    MessageUtils.connect(userNameController.text, buildContext);
+  _renderServerList() {
+    List<Widget> list = List();
+    ServerAddresses.ipList.map((item) {
+      int index = ServerAddresses.ipList.indexOf(item);
+      print("正在渲染服务器列表");
+      list
+        ..add(
+          Container(
+            padding: EdgeInsets.only(top: 15, bottom: 15, left: 15, right: 15),
+            decoration: BoxDecoration(
+//              color: _selectedServerIndex == index ? Colors.blue : Colors.white,
+                ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  "http://192.168.$item",
+                  style: TextStyle(
+                    fontSize: 18,
+//                      color: _selectedServerIndex == index
+//                          ? Colors.white
+//                          : Colors.black54,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+    });
+    return list;
   }
 
   @override
@@ -130,7 +163,6 @@ class _LoginState extends State<Login> {
     print("准备清空数据");
     _messageBloc.dispatch(ClearMessageState());
     Loading loading = null;
-    _initTheme(_themeBloc);
     return BlocBuilder(
       bloc: _authBloc,
       builder: (BuildContext context, AuthState _authState) {
@@ -239,6 +271,45 @@ class _LoginState extends State<Login> {
                         onPressed: () => _login(_authBloc, context),
                       ),
                     ),
+                    UnconstrainedBox(
+                      child: FlatButton(
+                        child: Container(
+                          child: Row(
+                            children: <Widget>[
+                              Icon(Icons.swap_vert, color: Colors.black38),
+                              Text(
+                                "切换服务器",
+                                style: TextStyle(color: Colors.black38),
+                              ),
+                            ],
+                          ),
+                        ),
+                        onPressed: () {
+                          showModalBottomSheet(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return Container(
+                                  padding: EdgeInsets.only(top: 15),
+                                  width: Utils.getScreenSize().width,
+                                  height: Utils.getScreenSize().height * .7,
+                                  decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15)),
+                                  ),
+                                  child: CupertinoScrollbar(
+                                    child: SingleChildScrollView(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                        children: _renderServerList( ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              });
+                        },
+                      ),
+                    )
                   ],
                 ),
               ),

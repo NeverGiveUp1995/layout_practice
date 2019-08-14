@@ -1,4 +1,5 @@
 import 'package:layout_practice/blocs/theme/bloc.dart';
+import 'package:layout_practice/modals/login_modal/User.dart';
 import 'package:meta/meta.dart';
 import 'package:layout_practice/modals/theme/Theme.dart' as myThemes;
 
@@ -9,8 +10,9 @@ abstract class ThemeEvent {
 
 class ToggleTheme extends ThemeEvent {
   myThemes.Theme theme;
+  User currentUser;
 
-  ToggleTheme({@required this.theme});
+  ToggleTheme({@required this.theme, @required this.currentUser});
 
   @override
   String toString() {

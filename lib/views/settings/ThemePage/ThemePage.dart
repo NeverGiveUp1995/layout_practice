@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:layout_practice/blocs/auth/bloc.dart';
 import 'package:layout_practice/blocs/theme/bloc.dart';
 import 'package:layout_practice/components/BackBtn/BackBtn.dart';
 import 'package:layout_practice/modals/theme/Theme.dart' as myTheme;
 import 'package:layout_practice/theme/ThemeData.dart';
+import 'package:provider/provider.dart';
 
 class ThemePage extends StatelessWidget {
   ThemeBloc _themeBloc;
@@ -148,6 +150,7 @@ class _ThemeTypeArea extends StatelessWidget {
 
 class _ThmeItems extends StatelessWidget {
   ThemeBloc _themeBloc;
+  AuthBloc _authBloc;
   List<myTheme.Theme> _themes; //需要渲染的主题数据
   bool _allowAdd; //是否在最后渲染增加操作
   Function _callback; //点击增加按钮的时候，对应的回调函数
@@ -163,6 +166,7 @@ class _ThmeItems extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<Widget> _themeWidgets = List();
+    _authBloc = Provider.of<AuthBloc>(context);
     double _width = 50.0;
     double _height = 50.0;
     if (_themes != null && _themes.length > 0) {
@@ -194,6 +198,7 @@ class _ThmeItems extends StatelessWidget {
                           onPressed: () {
                             _themeBloc.dispatch(ToggleTheme(
                               theme: theme,
+                              currentUser: _authBloc.currentState.user,
                             ));
                           },
                           child: Container(),
@@ -281,8 +286,13 @@ class _ThmeItems extends StatelessWidget {
     return BlocBuilder(
       bloc: _themeBloc,
       builder: (BuildContext context, ThemeState _currentState) {
-        return Wrap(
-          children: _themeWidgets,
+        return BlocBuilder(
+          bloc: _authBloc,
+          builder: (BuildContext context, AuthState _authState) {
+            return Wrap(
+              children: _themeWidgets,
+            );
+          },
         );
       },
     );

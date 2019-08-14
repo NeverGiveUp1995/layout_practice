@@ -11,9 +11,10 @@ class Utils {
   /**
    * 根据文件名称获取文件
    */
-  static Future<File> getLocalFile(String filename) async {
-//    String dir = (await getApplicationDocumentsDirectory()).path;
+  static Future<File> getLocalFile(String currentLoginUserAccount,
+      String folderName, String filename) async {
     String dir;
+    print(currentLoginUserAccount);
     try {
       dir = (await getExternalStorageDirectory()).path;
     } catch (e) {
@@ -21,8 +22,12 @@ class Utils {
         dir = (await getApplicationDocumentsDirectory()).path;
       }
     }
-    print("文件目录地址$dir");
-    return File('$dir/$filename');
+    //创建对应的文件夹
+    await Directory("$dir/$currentLoginUserAccount/$folderName")
+        .create(recursive: true);
+    print("文件目录地址$dir/$currentLoginUserAccount/$folderName/$filename");
+
+    return File('$dir/$currentLoginUserAccount/$folderName/$filename');
   }
 
   /**
@@ -45,6 +50,7 @@ class Utils {
    * 将内容写入对应的文件
    */
   static Future<Null> writeContentTofile(File file, String writeContent) async {
+    print("即将将数据写入文件。。。。：$writeContent");
     await file.writeAsString(writeContent);
   }
 
@@ -58,9 +64,9 @@ class Utils {
    */
   static WebSocketChannel getChannel(String userAccount) {
     return IOWebSocketChannel.connect(
-      'ws://192.168.1.32:8080/WebSocketServer/${userAccount}',
+//      'ws://192.168.1.32:8080/WebSocketServer/${userAccount}',
 //      'ws://192.168.0.123:8080/WebSocketServer/${userAccount}',
-//      'ws://192.168.0.112:8080/WebSocketServer/${userAccount}',
+      'ws://192.168.0.112:8080/WebSocketServer/${userAccount}',
     );
   }
 }

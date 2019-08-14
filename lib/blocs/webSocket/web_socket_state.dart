@@ -16,7 +16,9 @@ class InitialWebSocketState extends WebSocketState {}
 class MessageHistoryWithFriendState extends WebSocketState {
   MessageHistoryWithFriend messageHistoryWithFriend;
 
-  MessageHistoryWithFriendState({@required this.messageHistoryWithFriend});
+  MessageHistoryWithFriendState({@required this.messageHistoryWithFriend}) {
+    print("聊天数据更新了：$messageHistoryWithFriend");
+  }
 }
 
 class UserWebSocketState extends WebSocketState {

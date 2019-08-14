@@ -13,7 +13,7 @@ class User {
   String address; //地址
   User(
       {@required account,
-      @required nickname,
+      nickname,
       password,
       phoneNum,
       email,

@@ -10,7 +10,7 @@ class EntityFactory {
       return LoginEntity.fromJson(json) as T;
     } else if (T.toString() == "MessageListEntity") {
       return MessageListEntity.fromJson(json) as T;
-    } else if (T.toString() == "SimgalMessageResultEntity") {
+    } else if (T.toString() == "SingleMessageResultEntity") {
       return SingleMessageResultEntity.fromJson(json) as T;
     } else {
       return null;

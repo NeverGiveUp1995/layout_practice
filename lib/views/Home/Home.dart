@@ -11,7 +11,9 @@ import 'package:layout_practice/modals/message/Message.dart';
 import 'package:layout_practice/modals/login_modal/User.dart';
 import 'package:layout_practice/blocs/auth/bloc.dart';
 import 'package:layout_practice/blocs/theme/bloc.dart';
-import 'package:layout_practice/utils/Utils.dart';
+
+
+import 'package:layout_practice/utils/webSocket/MessageUtils.dart';
 
 class Home extends StatefulWidget {
   GlobalKey _key = GlobalKey();
@@ -59,12 +61,7 @@ class HomeState extends State<Home> {
     _themeBloc = BlocProvider.of<ThemeBloc>(context);
     _messageBloc = BlocProvider.of<MessageBloc>(context);
 //    创建websocket连接
-    if (_authBloc.currentState != null &&
-        _authBloc.currentState.user != null &&
-        _authBloc.currentState.user.account != null &&
-        _webSocketBloc != null) {
-      print("正在连接服务器");
-    }
+    MessageUtils.connect(_authBloc.currentState.user.account, context);
     if (_authBloc.currentState.user != null &&
         _authBloc.currentState.user.account != null &&
         _messageBloc.currentState.messageList == null) {
