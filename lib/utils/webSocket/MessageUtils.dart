@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:layout_practice/blocs/webSocket/bloc.dart';
+import 'package:layout_practice/modals/ServerIp.dart';
 import 'package:layout_practice/modals/message/Message.dart';
 import 'package:layout_practice/modals/message/single_message_result_entity.dart';
 import 'package:provider/provider.dart';
@@ -10,12 +11,17 @@ import 'package:provider/provider.dart';
 class MessageUtils {
   static WebSocket _webSocket;
 
-  static void connect(String userAccount, BuildContext context) {
+  static Future connect(String userAccount, BuildContext context) async {
     print(
         '\n\n\n===============================【正在创建与服务器的连接。。。】========================================');
-    Future<WebSocket> futureWebSocket = WebSocket.connect(
-//        'ws://192.168.1.32:8080/WebSocketServer/${userAccount}'); // Api.WS_URL 为服务器端的 websocket 服务
-        'ws://192.168.0.112:8080/WebSocketServer/${userAccount}'); // Api.WS_URL 为服务器端的 websocket 服务
+    String serverIp = await ServerIp(
+      requestType: "ws",
+      serverApi: "/WebSocketServer/${userAccount}",
+    ).getServerIp();
+    //      'ws://192.168.1.32:8080/WebSocketServer/${userAccount}',
+    Future<WebSocket> futureWebSocket =
+        WebSocket.connect(serverIp); // Api.WS_URL 为服务器端的 websocket 服务
+
     futureWebSocket.then((WebSocket ws) {
       _webSocket = ws;
       _webSocket.readyState;

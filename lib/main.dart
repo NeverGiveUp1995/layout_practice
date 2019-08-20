@@ -8,6 +8,7 @@ import 'package:layout_practice/blocs/webSocket/bloc.dart';
 import 'package:layout_practice/views/CustomTheme/CustomTheme.dart';
 import 'package:layout_practice/views/Home/Home.dart';
 import 'package:layout_practice/views/Login/login.dart';
+import 'package:layout_practice/views/Register/Register.dart';
 import 'package:layout_practice/views/settings/Settings.dart';
 import 'package:layout_practice/views/settings/ThemePage/ThemePage.dart';
 
@@ -42,6 +43,7 @@ class _MyAppState extends State<MyApp> {
         initialRoute: '/',
         routes: {
           '/': (context) => Login(),
+          "/register": (context) => Register(),
           //主页
           '/home': (context) => Home(
                 context: context,

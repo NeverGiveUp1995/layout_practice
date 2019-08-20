@@ -2,14 +2,14 @@ import 'package:layout_practice/modals/login_modal/User.dart';
 
  class LoginEntity {
   User data;
-  dynamic message;
+  String tip;
   String status;
 
-  LoginEntity({this.data, this.message, this.status});
+  LoginEntity({this.data, this.tip, this.status});
 
   LoginEntity.fromJson(Map<String, dynamic> json) {
     data = json['data'] != null ? new User.fromJson(json['data']) : null;
-    message = json['message'];
+    tip = json['tip'];
     status = json['status'];
   }
 
@@ -18,7 +18,7 @@ import 'package:layout_practice/modals/login_modal/User.dart';
     if (this.data != null) {
       data['data'] = this.data.toJson();
     }
-    data['message'] = this.message;
+    data['tip'] = this.tip;
     data['status'] = this.status;
     return data;
   }

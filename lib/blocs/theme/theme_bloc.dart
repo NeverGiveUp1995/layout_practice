@@ -21,9 +21,9 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
       print("准备读取用户【${event.currentUser.account}】设置的主题缓存文件");
       //将当前主题文件写入缓存文件中
       File themeFile = await Utils.getLocalFile(
-        event.currentUser.account,
-        '${CacheFolderNames.themes}',
-        '${FileNames.theme}.txt',
+        currentLoginUserAccount: event.currentUser.account,
+        folderName: '${CacheFolderNames.themes}',
+        filename: '${FileNames.theme}',
       );
 //      Utils.readContentFromFile(themeFile);
       await Utils.writeContentTofile(themeFile, event.theme.toString());

@@ -60,10 +60,19 @@ class _LoginState extends State<Login> {
     RegExp exp = new RegExp("^1(3|4|5|7|8)\d{9}");
     print(exp.hasMatch(userNameController.text));
     _initTheme(_themeBloc, userNameController.text);
+    Utils.loading(context, true);
     authBloc.dispatch(
       LoginEvent(
           buildContext, userNameController.text, passwordController.text),
     );
+  }
+
+  /**
+   * 切换服务器地址
+   */
+  _toggleServer(int index) {
+    String toggleIp = ServerAddresses.ipList[index];
+    print("即将切换的ip：$toggleIp");
   }
 
   _initTheme(ThemeBloc _themeBloc, String userAccount) async {
@@ -74,14 +83,14 @@ class _LoginState extends State<Login> {
     ///   初始化主题
     //1.先从本地读取缓存文件，如果换成你文件中有设置的主题，则设置当前默认主题为缓存文件中的主题
     File themeFile = await Utils.getLocalFile(
-      userAccount,
-      CacheFolderNames.themes,
-      '${FileNames.theme}.txt',
+      currentLoginUserAccount: userAccount,
+      folderName: CacheFolderNames.themes,
+      filename: '${FileNames.theme}',
     );
 
     String themeData = await Utils.readContentFromFile(themeFile);
     try {
-      themeJson = themeData != "0" ? json.decode(themeData) : null;
+      themeJson = themeData != null ? json.decode(themeData) : null;
     } catch (e) {
       print("当前设置的主题文件已损坏！即将恢复默认设置");
     }
@@ -122,34 +131,95 @@ class _LoginState extends State<Login> {
 
   _renderServerList() {
     List<Widget> list = List();
-    ServerAddresses.ipList.map((item) {
-      int index = ServerAddresses.ipList.indexOf(item);
-      print("正在渲染服务器列表");
-      list
-        ..add(
-          Container(
-            padding: EdgeInsets.only(top: 15, bottom: 15, left: 15, right: 15),
-            decoration: BoxDecoration(
-//              color: _selectedServerIndex == index ? Colors.blue : Colors.white,
-                ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  "http://192.168.$item",
-                  style: TextStyle(
-                    fontSize: 18,
-//                      color: _selectedServerIndex == index
-//                          ? Colors.white
-//                          : Colors.black54,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ],
+    list.add(
+      Container(
+        color: Colors.white,
+        padding: EdgeInsets.only(top: 15, bottom: 15, left: 15, right: 15),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              "手动输入：http://192.168.",
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+              ),
             ),
-          ),
-        );
-    });
+            Container(
+              margin: EdgeInsets.only(right: 10),
+              width: 50,
+              height: 38,
+              child: TextField(
+                style: TextStyle(fontSize: 14),
+                decoration: InputDecoration(
+                  labelText: '后两位ip',
+                ),
+              ),
+            ),
+            ClipRect(
+              child: FlatButton(
+                color: Colors.blue,
+                child: Text(
+                  "确认",
+                  style: TextStyle(color: Colors.white),
+                ),
+                onPressed: () {},
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+    ServerAddresses.ipList.forEach(
+      (item) {
+        int index = ServerAddresses.ipList.indexOf(item);
+        print("_selectedServerIndex:$_selectedServerIndex,当前索引：$index");
+        list
+          ..add(
+            FlatButton(
+                padding: EdgeInsets.all(0),
+                onPressed: () async {
+                  _toggleServer(index);
+                  setState(() {
+                    _selectedServerIndex = index;
+                  });
+                  Navigator.of(context).pop();
+                  File file =
+                      await Utils.getLocalFile(filename: FileNames.serverIp);
+                  Utils.writeContentTofile(file, item);
+                  Utils.showTip(
+                    context: context,
+                    tipText: "服务器已切换到http://192.168.$item",
+                    duration: 800,
+                  );
+                },
+                child: Container(
+                  padding:
+                      EdgeInsets.only(top: 15, bottom: 15, left: 15, right: 15),
+                  decoration: BoxDecoration(
+                    color: _selectedServerIndex == index
+                        ? Colors.blue
+                        : Colors.white,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        "http://192.168.$item",
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: _selectedServerIndex == index
+                              ? Colors.white
+                              : Colors.black54,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
+                )),
+          );
+      },
+    );
     return list;
   }
 
@@ -162,196 +232,236 @@ class _LoginState extends State<Login> {
 
     print("准备清空数据");
     _messageBloc.dispatch(ClearMessageState());
-    Loading loading = null;
     return BlocBuilder(
       bloc: _authBloc,
       builder: (BuildContext context, AuthState _authState) {
         List<Widget> list = List();
-        list.add(Scaffold(
-            appBar: null,
-            body: Center(
-              child: Container(
-                padding: EdgeInsets.only(
-                    left: 15, right: 15, bottom: 15), //设置4边padding为15
-                child: new Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  //类似于flax布局,主轴方向上居中
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  //侧轴方向居中
-                  children: <Widget>[
+        list.add(Center(
+          child: SingleChildScrollView(
+            child: Container(
+              height: Utils.getScreenSize().height,
+              padding: EdgeInsets.only(
+                  left: 15, right: 15, bottom: 15), //设置4边padding为15
+              child: new Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                //类似于flax布局,主轴方向上居中
+                crossAxisAlignment: CrossAxisAlignment.center,
+                //侧轴方向居中
+                children: <Widget>[
 //                  头像
-                    Header(
-                      width: 100.00,
-                      height: 100.00,
-                      imgSrc:
-                          'https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1177105977,3340879911&fm=26&gp=0.jpg',
-                      isMan: true,
-                    ),
-                    //帐号输入框
-                    new Container(
+                  Header(
+                    width: 100.00,
+                    height: 100.00,
+                    imgSrc:
+                        'https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1177105977,3340879911&fm=26&gp=0.jpg',
+                    isMan: true,
+                  ),
+                  //帐号输入框
+                  new Container(
 //                    color: Colors.pinkAccent,
-                      margin: EdgeInsets.only(top: 10, bottom: 10),
-                      child: new TextField(
-                        controller: userNameController,
-                        cursorColor: Color.fromRGBO(150, 150, 150, 0),
-                        //设置光标颜色
-                        cursorWidth: 1.5,
-                        //设置光标宽度
-                        textAlign: TextAlign.center,
-                        decoration: InputDecoration(
-                          hintText: '用户名 / 手机号 / 邮箱',
-                          suffixIcon: Icon(Icons.expand_more),
-                          hintStyle: textStyle,
-                          //未获取焦点时的边框样式
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.grey,
-                              width: 1,
-                            ),
+                    margin: EdgeInsets.only(top: 10, bottom: 10),
+                    child: new TextField(
+                      controller: userNameController,
+                      cursorColor: Color.fromRGBO(150, 150, 150, 0),
+                      //设置光标颜色
+                      cursorWidth: 1.5,
+                      //设置光标宽度
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(
+                        focusColor: Colors.redAccent,
+                        hintText: '用户名 / 手机号 / 邮箱',
+                        contentPadding: EdgeInsets.only(left: 45, top: 10),
+                        suffixIcon: Icon(Icons.expand_more),
+                        hintStyle: textStyle,
+                        //未获取焦点时的边框样式
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey,
+                            width: 1,
                           ),
-                          //获取焦点时的边框样式
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Color.fromRGBO(0, 0, 0, 0.9),
-                              width: 1,
-                            ),
+                        ),
+                        //获取焦点时的边框样式
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color.fromRGBO(0, 0, 0, 0.9),
+                            width: 1,
                           ),
                         ),
                       ),
                     ),
-                    //密码输入框
-                    new Container(
+                  ),
+                  //密码输入框
+                  new Container(
 //                    color: Colors.blue,
-                      margin: EdgeInsets.only(top: 1, bottom: 10),
-                      child: new TextField(
-                        controller: passwordController,
-                        //设置光标颜色
-                        cursorColor: Colors.black38,
-                        //设置光标宽度
-                        textAlign: TextAlign.center,
-                        cursorWidth: 1.5,
-                        decoration: InputDecoration(
-                          hintText: '密 码',
-                          suffixIcon: Icon(Icons.remove_red_eye),
-                          hintStyle: textStyle,
-                          //未获取焦点时的边框样式
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.grey,
-                              width: 1,
-                            ),
-                          ),
-                          //获取焦点时的边框样式
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Color.fromRGBO(0, 0, 0, 0.9),
-                              width: 1,
-                            ),
+                    margin: EdgeInsets.only(top: 1, bottom: 10),
+                    child: new TextField(
+                      controller: passwordController,
+                      //设置光标颜色
+                      cursorColor: Colors.black38,
+                      //设置光标宽度
+                      textAlign: TextAlign.center,
+                      cursorWidth: 1.5,
+                      decoration: InputDecoration(
+                        hintText: '密 码',
+                        contentPadding: EdgeInsets.only(left: 45, top: 10),
+                        suffixIcon: Icon(Icons.remove_red_eye),
+                        hintStyle: textStyle,
+                        //未获取焦点时的边框样式
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey,
+                            width: 1,
                           ),
                         ),
-                        obscureText: true,
-                        //设置文本框是否隐藏
-                        keyboardType: TextInputType.emailAddress,
+                        //获取焦点时的边框样式
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color.fromRGBO(0, 0, 0, 0.9),
+                            width: 1,
+                          ),
+                        ),
                       ),
+                      obscureText: true,
+                      //设置文本框是否隐藏
+                      keyboardType: TextInputType.emailAddress,
                     ),
-                    //登录按钮
-                    new Container(
+                  ),
+                  //登录按钮
+                  Container(
+                    margin: EdgeInsets.only(
+                        left: 45, right: 45, top: 15, bottom: 20),
+                    child: CupertinoButton(
                       padding: EdgeInsets.only(
-                          left: 15, top: 5, right: 15, bottom: 5),
-                      margin: EdgeInsets.only(top: 10),
-                      height: 50,
-                      width: 500,
-                      child: new RaisedButton(
-                        color: Colors.white,
-                        padding: const EdgeInsets.only(
-                            left: 15, right: 15, top: 5, bottom: 5),
-                        textColor: Colors.grey,
-                        child: new Text("登 录"),
-                        onPressed: () => _login(_authBloc, context),
+                        top: 5,
+                        left: 65,
+                        right: 65,
+                        bottom: 5,
+                      ),
+                      color: Colors.blue,
+                      onPressed: () => _login(_authBloc, context),
+                      child: Text("  登    录  "),
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 45, right: 45),
+                    child: CupertinoButton(
+                      padding: EdgeInsets.only(
+                        top: 5,
+                        left: 65,
+                        right: 65,
+                        bottom: 5,
+                      ),
+                      color: Colors.blue,
+                      onPressed: () {
+                        Navigator.of(context).pushNamed("/register");
+                      },
+                      child: Text("注册账号"),
+                    ),
+                  ),
+                  //【忘记密码、注册用户】
+                  Container(
+                    child: FlatButton(
+                      onPressed: () {},
+                      child: Text(
+                        "忘记密码?",
+                        style: TextStyle(color: Colors.lightBlue),
                       ),
                     ),
-                    UnconstrainedBox(
-                      child: FlatButton(
-                        child: Container(
-                          child: Row(
-                            children: <Widget>[
-                              Icon(Icons.swap_vert, color: Colors.black38),
-                              Text(
-                                "切换服务器",
-                                style: TextStyle(color: Colors.black38),
-                              ),
-                            ],
-                          ),
+                  ),
+                  UnconstrainedBox(
+                    child: FlatButton(
+                      child: Container(
+                        child: Row(
+                          children: <Widget>[
+                            Icon(Icons.swap_vert, color: Colors.black38),
+                            Text(
+                              "切换服务器",
+                              style: TextStyle(color: Colors.black38),
+                            ),
+                          ],
                         ),
-                        onPressed: () {
-                          showModalBottomSheet(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return Container(
-                                  padding: EdgeInsets.only(top: 15),
-                                  width: Utils.getScreenSize().width,
-                                  height: Utils.getScreenSize().height * .7,
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(15)),
+                      ),
+                      onPressed: () {
+                        showModalBottomSheet(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return Stack(
+                                alignment: Alignment.topCenter,
+                                children: <Widget>[
+                                  //背景蒙层背景色
+                                  Container(
+                                    color: Colors.black54,
                                   ),
-                                  child: CupertinoScrollbar(
-                                    child: SingleChildScrollView(
-                                      child: Column(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.center,
-                                        children: _renderServerList( ),
+                                  //标题
+                                  Container(
+                                    height: 40,
+                                    margin: EdgeInsets.only(
+                                      left: Utils.getScreenSize().width * 0.020,
+                                      right:
+                                          Utils.getScreenSize().width * 0.020,
+                                      bottom: 10,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(15),
+                                        topRight: Radius.circular(15),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        Text(
+                                          "服务器切换",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.black54,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  //滚动区域
+                                  Container(
+                                    margin: EdgeInsets.only(
+                                      left: Utils.getScreenSize().width * 0.020,
+                                      right:
+                                          Utils.getScreenSize().width * 0.020,
+                                      bottom: 10,
+                                      top: 43,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(15),
+                                        topRight: Radius.circular(15),
+                                      ),
+                                    ),
+                                    child: CupertinoScrollbar(
+                                      child: SingleChildScrollView(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: _renderServerList(),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                );
-                              });
-                        },
-                      ),
-                    )
-                  ],
-                ),
+                                ],
+                              );
+                            });
+                      },
+                    ),
+                  )
+                ],
               ),
-            )));
-        print(
-            "_authBloc.currentState.loading:${_authBloc.currentState.loading}");
-        if (_authBloc.currentState.loading == true) {
-          loading = Loading(
-            icon: Icon(
-              MyFlutterIcons.spin6,
-              color: Colors.blue,
-              size: 37,
             ),
-            iconRotate: true,
-            tipText: "正在登录...",
-          );
-          list.add(loading);
-        } else {
-          if (_authBloc.currentState.loggedIn == true) {
-            loading = Loading(
-              icon: Icon(
-                Icons.favorite,
-                color: Colors.blue,
-                size: 37,
-              ),
-              iconRotate: false,
-              tipText: "登录成功！",
-            );
-          } else {
-            loading = Loading(
-              icon: Icon(
-                Icons.error,
-                color: Colors.blue,
-                size: 37,
-              ),
-              iconRotate: false,
-              tipText: _authBloc.currentState.message == null
-                  ? "登录失败！"
-                  : _authBloc.currentState.message,
-            );
-          }
-        }
+          ),
+        ));
         return Scaffold(
           body: Stack(
             children: list,

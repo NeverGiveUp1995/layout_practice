@@ -1,24 +1,25 @@
 import 'package:dio/dio.dart';
+import 'package:layout_practice/modals/ServerIp.dart';
 
 class NetServer {
   static Future<Response> request({api, method, params, callback}) async {
     print("loading。。。。");
-    String baseUrl = "http://192.168.0.112";
-//    String baseUrl = "http://192.168.0.123";
-//    String baseUrl = "http://192.168.1.19";
-//    String baseUrl = "http://192.168.1.29";
+
 //    String baseUrl = "http://192.168.1.32";
-    int port = 8080;
+    String requestUrl =
+        await ServerIp(requestType: "http", port: "8080", serverApi: api)
+            .getServerIp();
+    print("请求地址：$requestUrl");
     Dio dio = new Dio();
     //设置请求url
-    dio.options.baseUrl = baseUrl;
+    dio.options.baseUrl = requestUrl;
     // 设置请求超时时长
     dio.options.connectTimeout = 20000;
     Response response;
     if (method is String && method.toLowerCase() == 'get' || method == null) {
-      response = await dio.get("$baseUrl:$port$api", queryParameters: params);
+      response = await dio.get("$requestUrl", queryParameters: params);
     } else if (method is String && method.toLowerCase() == 'post') {
-      response = await dio.post("$baseUrl:$port$api", queryParameters: params);
+      response = await dio.post("$requestUrl", queryParameters: params);
     }
     if (callback != null) {
       callback(response);

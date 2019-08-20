@@ -32,12 +32,14 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
           MessageHistoryWithFriend(messageHistory: List<Message>());
       //1.获取与该用户的缓存文件
       File chatHistoryFile = await Utils.getLocalFile(
-          event.message.receiver.account,
-          '${CacheFolderNames.friends}/${event.message.sender.account}',
-          '${FileNames.chatHistory}.txt');
+        currentLoginUserAccount: event.message.receiver.account,
+        folderName:
+            '${CacheFolderNames.friends}/${event.message.sender.account}',
+        filename: '${FileNames.chatHistory}',
+      );
       //2.将缓存文件中的数据读取出来并且转换成对应的实体类
       String chatHistoryData = await Utils.readContentFromFile(chatHistoryFile);
-      if (chatHistoryData != "0") {
+      if (chatHistoryData != null) {
         try {
           messageHistoryWithFriend =
               MessageHistoryWithFriend.fromJson(json.decode(chatHistoryData));
@@ -68,14 +70,16 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
       print("\n\n正在获取聊天记录文件\n");
       //1.获取与该用户的缓存文件
       File chatHistoryFile = await Utils.getLocalFile(
-          event.message.sender.account,
-          '${CacheFolderNames.friends}/${event.message.receiver.account}',
-          '${FileNames.chatHistory}.txt');
+        currentLoginUserAccount: event.message.sender.account,
+        folderName:
+            '${CacheFolderNames.friends}/${event.message.receiver.account}',
+        filename: '${FileNames.chatHistory}',
+      );
       print("获取到的文件==========>：\n$chatHistoryFile");
       //2.将缓存文件中的数据读取出来并且转换成对应的实体类
       String chatHistoryData = await Utils.readContentFromFile(chatHistoryFile);
       print("===========文件中读取的数据========\n$chatHistoryData");
-      if (chatHistoryData != "0") {
+      if (chatHistoryData != null) {
         try {
           print("解码出来的json数据：${json.decode(chatHistoryData)}");
           messageHistoryWithFriend =
