@@ -9,7 +9,6 @@ class NetServer {
     String requestUrl =
         await ServerIp(requestType: "http", port: "8080", serverApi: api)
             .getServerIp();
-    print("请求地址：$requestUrl");
     Dio dio = new Dio();
     //设置请求url
     dio.options.baseUrl = requestUrl;

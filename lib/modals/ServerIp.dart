@@ -26,11 +26,12 @@ class ServerIp {
     print("服务器ip地址文件：$serverIpFile");
     String serverIp = await Utils.readContentFromFile(serverIpFile);
     if (serverIp != null) {
-      ip = "192.168.${serverIp}";
-      _serverAddress = '${requestType}192.168.${serverIp}:8080${serverApi}';
+      ip = serverIp;
+      _serverAddress = '${requestType}${serverIp}:8080${serverApi}';
     } else {
       _serverAddress = "${this.requestType}$ip:${this.port}${this.serverApi}";
     }
+    print("请求的ip地址：$_serverAddress");
     return _serverAddress;
   }
 

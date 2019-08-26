@@ -3,10 +3,10 @@ import 'package:layout_practice/modals/login_modal/User.dart';
 
 class MessageListEntity {
   List<Message> data;
-  dynamic message;
+  dynamic tip;
   String status;
 
-  MessageListEntity({this.data, this.message, this.status});
+  MessageListEntity({this.data, this.tip, this.status});
 
   MessageListEntity.fromJson(Map<String, dynamic> json) {
     if (json['data'] != null) {
@@ -15,7 +15,7 @@ class MessageListEntity {
         data.add(new Message.fromJson(v));
       });
     }
-    message = json['message'];
+    tip = json['message'];
     status = json['status'];
   }
 
@@ -24,7 +24,7 @@ class MessageListEntity {
     if (this.data != null) {
       data['data'] = this.data.map((v) => v.toJson()).toList();
     }
-    data['message'] = this.message;
+    data['message'] = this.tip;
     data['status'] = this.status;
     return data;
   }

@@ -41,14 +41,6 @@ class MessageUtils {
         print(singleMessageResultEntity);
         print(message);
         if (singleMessageResultEntity.msgType == "1") {
-          if (message != null) {
-            //更新数据
-            SingleMessageResultEntity singleMessageResultEntity =
-                SingleMessageResultEntity.fromJson(json.decode(data));
-            Message message = singleMessageResultEntity.data;
-            WebSocketBloc webSocketBloc = Provider.of<WebSocketBloc>(context);
-            webSocketBloc.dispatch(ReceivedMessageWithFriend(message: message));
-          }
           webSocketBloc.dispatch(ReceivedMessageWithFriend(message: message));
         }
       }

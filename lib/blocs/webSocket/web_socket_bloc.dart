@@ -2,11 +2,16 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:bloc/bloc.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:layout_practice/blocs/message/bloc.dart';
+import 'package:layout_practice/modals/ReseponseData/response_data_entity.dart';
 import 'package:layout_practice/modals/message/Message.dart';
 import 'package:layout_practice/modals/message/MessageHistoryWithFriend.dart';
+import 'package:layout_practice/modals/message/message_list_entity.dart';
 import 'package:layout_practice/utils/Utils.dart';
 import 'package:layout_practice/utils/consts/CacheFolderNames.dart';
 import 'package:layout_practice/utils/consts/FileNames.dart';
+import 'package:layout_practice/utils/request.dart';
 import 'package:layout_practice/utils/webSocket/MessageUtils.dart';
 import './bloc.dart';
 
@@ -14,10 +19,41 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
   @override
   WebSocketState get initialState => InitialWebSocketState();
 
+  /**
+   * 从服务器获取当前用户与当前聊天用户的聊天记录，并且将聊天记录添加到bloc状态中
+   */
+  setChatHistory(BuildContext context, String currentUserAccount,
+      String friendAccount, String tipText) async* {
+    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+    Utils.loading(context, true);
+    var data = await NetServer.request(
+      api: '/message/getChatHistory',
+      method: 'post',
+      params: {
+        "currentUserAccount": currentUserAccount,
+        "friendAccount": friendAccount
+      },
+    );
+    print("从服务器获取到聊天记录");
+    //1.将聊天记录更新到bloc中，并且将其存入缓存文件
+    MessageListEntity messageListEntity =
+        MessageListEntity.fromJson(json.decode(data.toString()));
+
+    MessageHistoryWithFriend messageHistoryWithFriend =
+        MessageHistoryWithFriend(messageHistory: messageListEntity.data);
+    yield MessageHistoryWithFriendState(
+      friendAccount: friendAccount,
+      messageHistoryWithFriend: messageHistoryWithFriend,
+    );
+    Utils.loading(context, false);
+  }
+
   @override
   Stream<WebSocketState> mapEventToState(
     WebSocketEvent event,
   ) async* {
+    //=============================================================【接受好友信息事件】==========================================================================
+
     /*如果接收到消息时：
     1.首先获取本地与所有用户的消息记录文件中的数据，
           ------如果存在
@@ -57,9 +93,14 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
       }
       //4.设置与当前好友的消息记录到状态
       yield MessageHistoryWithFriendState(
+        //注意：因为此事件是  好友--》发送消息--》自己，所以此时，好友作为sender，自己作为receiver
+        friendAccount: event.message.sender.account,
         messageHistoryWithFriend: messageHistoryWithFriend,
       );
     }
+
+    //=============================================================【发送聊天信息的事件】==========================================================================
+
     /*
      *发送消息：
      *      ----1.将消息存入缓存的同时把当前聊天的好友的聊天记录状态更新
@@ -100,6 +141,8 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
       }
       //4.设置与当前好友的消息记录到状态
       yield MessageHistoryWithFriendState(
+        //注意：因为此事件是  自己--》发送消息--》好友，所以此时，好友作为receiver，自己作为sender
+        friendAccount: event.message.receiver.account,
         messageHistoryWithFriend: messageHistoryWithFriend,
       );
       //5.将消息发送到服务器
@@ -108,10 +151,95 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
         event.message.content,
       );
     }
-    if (event is DisPoseSocket) {
-//      关闭socket连接
-      if (currentState.channel != null) {
-        currentState.channel.sink.close();
+    //=============================================================【初始化聊天记录事件】==========================================================================
+    if (event is InitChatHisStory) {
+      //1.判断当前用户与当前的好友的聊天记录数据是否在bloc中存在，如果不存在，则从文件中读取，如果文件中也不存在，则发送请求到服务器拉取两人聊天记录并初始化
+      String currentUserAccount = event.currentUserAccount;
+      String friendAccount = event.friendAccount;
+      print(
+          "======================================${currentState.messageHistoryWithFriends}");
+      if (currentState.messageHistoryWithFriends == null ||
+          (currentState.messageHistoryWithFriends != null &&
+              currentState.messageHistoryWithFriends[friendAccount] == null)) {
+        //------1.1，获取当前聊天两人的聊天记录文件
+        File chatHistoryFile = await Utils.getLocalFile(
+          currentLoginUserAccount: currentUserAccount,
+          folderName: "${CacheFolderNames.friends}/${friendAccount}",
+          filename: FileNames.chatHistory,
+        );
+        String chatContent = await Utils.readContentFromFile(chatHistoryFile);
+
+        if (chatContent != null) {
+          MessageHistoryWithFriend messageHistoryWithFriend;
+          try {
+            messageHistoryWithFriend =
+                MessageHistoryWithFriend.fromJson(json.decode(chatContent));
+            //更新bloc中的聊天数据
+            yield MessageHistoryWithFriendState(
+              friendAccount: friendAccount,
+              messageHistoryWithFriend: messageHistoryWithFriend,
+            );
+          } catch (e) {
+            Utils.loading(event.context, true);
+            var data = await NetServer.request(
+              api: '/message/getChatHistory',
+              method: 'post',
+              params: {
+                "currentUserAccount": currentUserAccount,
+                "friendAccount": friendAccount
+              },
+            );
+            print("从服务器获取到聊天记录");
+            //1.将聊天记录更新到bloc中，并且将其存入缓存文件
+            MessageListEntity messageListEntity =
+                MessageListEntity.fromJson(json.decode(data.toString()));
+
+            MessageHistoryWithFriend messageHistoryWithFriend =
+                MessageHistoryWithFriend(
+                    messageHistory: messageListEntity.data);
+            yield MessageHistoryWithFriendState(
+              friendAccount: friendAccount,
+              messageHistoryWithFriend: messageHistoryWithFriend,
+            );
+            try {
+              Utils.writeContentTofile(
+                  chatHistoryFile, messageHistoryWithFriend.toString());
+            } catch (e) {
+              print("写入文件出错-----数据写入文件的时候出现了异常");
+            }
+            Utils.loading(event.context, false);
+          }
+        } else {
+          Utils.loading(event.context, true);
+          var data = await NetServer.request(
+            api: '/message/getChatHistory',
+            method: 'post',
+            params: {
+              "currentUserAccount": currentUserAccount,
+              "friendAccount": friendAccount
+            },
+          );
+          print("从服务器获取到聊天记录");
+          //1.将聊天记录更新到bloc中，并且将其存入缓存文件
+          MessageListEntity messageListEntity =
+              MessageListEntity.fromJson(json.decode(data.toString()));
+
+          MessageHistoryWithFriend messageHistoryWithFriend =
+              MessageHistoryWithFriend(messageHistory: messageListEntity.data);
+          try {
+            Utils.writeContentTofile(
+                chatHistoryFile, messageHistoryWithFriend.toString());
+          } catch (e) {
+            print("写入文件出错-----数据写入文件的时候出现了异常");
+          }
+          yield MessageHistoryWithFriendState(
+            friendAccount: friendAccount,
+            messageHistoryWithFriend: messageHistoryWithFriend,
+          );
+          Utils.loading(event.context, false);
+        }
+      } else {
+        print("bloc中存在与当前好友的聊天记录，不用发送请求");
       }
     }
   }

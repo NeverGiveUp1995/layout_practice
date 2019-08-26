@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:layout_practice/modals/message/Message.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
@@ -26,13 +27,13 @@ class Utils {
     //创建对应的文件夹
     if (folderName != null) {
       await Directory(
-              "$dir/${currentLoginUserAccount != null ? "currentLoginUserAccount/" : ''}/$folderName")
+              "$dir/${currentLoginUserAccount != null ? "$currentLoginUserAccount/" : ''}/$folderName")
           .create(recursive: true);
       print(
-          "文件目录地址$dir/${currentLoginUserAccount != null ? "currentLoginUserAccount/" : ''}/$folderName/$filename");
+          "文件目录地址$dir/${currentLoginUserAccount != null ? "$currentLoginUserAccount/" : ''}/$folderName/$filename");
     }
     File file = await File(
-        '$dir/${currentLoginUserAccount != null ? "currentLoginUserAccount/" : ''}${folderName != null ? "$folderName/" : ""}$filename');
+        '$dir/${currentLoginUserAccount != null ? "$currentLoginUserAccount/" : ''}${folderName != null ? "$folderName/" : ""}$filename');
     print("创建的文件：$file");
     return file;
   }
@@ -96,11 +97,12 @@ class Utils {
     }
   }
 
-  static void showTip(
-      {@required BuildContext context,
-      @required String tipText,
-      int duration,
-      Function callback}) {
+  static Future showTip({
+    @required BuildContext context,
+    @required String tipText,
+    int duration,
+    Function callback,
+  }) {
     print("提示信息：$tipText");
     showCupertinoDialog(
       context: context,

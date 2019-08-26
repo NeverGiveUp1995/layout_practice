@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,12 +10,9 @@ import 'package:layout_practice/blocs/webSocket/bloc.dart';
 import 'package:layout_practice/components/Header/Header.dart';
 import 'package:layout_practice/modals/login_modal/User.dart';
 import 'package:layout_practice/modals/message/Message.dart';
-import 'package:layout_practice/modals/message/single_message_result_entity.dart';
 import 'package:layout_practice/utils/Utils.dart';
 import 'package:layout_practice/utils/webSocket/MessageUtils.dart';
 import 'package:provider/provider.dart';
-import 'package:web_socket_channel/io.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 class Chat extends StatefulWidget {
   @required
@@ -38,7 +36,6 @@ class _ChatState extends State<Chat> {
   WebSocketBloc _webSocketBloc;
   AuthBloc _authBloc; //用户信息
   bool _canSendMsg = false; //是否满足发送消息的条件（文本框有文字）
-  WebSocketChannel channel;
 
 //  文本框编辑控制器
   TextEditingController _controller = new TextEditingController();
@@ -46,11 +43,6 @@ class _ChatState extends State<Chat> {
 //  聊天记录的滚动控制器
   ScrollController _scrollController = new ScrollController();
   String _text = "";
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   void dispose() {
@@ -64,12 +56,14 @@ class _ChatState extends State<Chat> {
   void _sendMessage(WebSocketBloc webSocketBloc) {
     String msg = _controller.text;
     if (msg.isNotEmpty) {
-      print("马上发送消息：${msg}");
+      print("马上发送消息给${widget.receiverAccount}：${msg}");
       _controller.text = "";
       webSocketBloc.dispatch(
         SendMessageToFriend(
           message: Message(
-            receiver: User(account: widget.receiverAccount),
+            receiver: User(
+              account: widget.receiverAccount,
+            ),
             sender: _authBloc.currentState.user,
             content: msg,
           ),
@@ -188,13 +182,20 @@ class _ChatState extends State<Chat> {
     _authBloc = Provider.of<AuthBloc>(context);
     _themeBloc = Provider.of<ThemeBloc>(context);
     _webSocketBloc = Provider.of<WebSocketBloc>(context);
-    print(_webSocketBloc.currentState.messageHistoryWithFriend != null &&
-            _webSocketBloc
-                    .currentState.messageHistoryWithFriend.messageHistory !=
-                null
-        ? _webSocketBloc.currentState.messageHistoryWithFriend.messageHistory
-        : "聊天页面没获取到数据");
     MessageUtils.connect(_authBloc.currentState.user.account, context);
+    //判断聊天blo0里面是否有当前聊天对象的数据，如果没有，从本地文件中获取数据，并初始化
+    if (_webSocketBloc.currentState.messageHistoryWithFriends == null ||
+        (_webSocketBloc.currentState.messageHistoryWithFriends != null &&
+            _webSocketBloc.currentState
+                    .messageHistoryWithFriends[widget.receiverAccount] ==
+                null)) {
+      _webSocketBloc.dispatch(InitChatHisStory(
+        context: context,
+        currentUserAccount: _authBloc.currentState.user.account,
+        friendAccount: widget.receiverAccount,
+      ));
+    }
+
     return BlocBuilder(
       bloc: _themeBloc,
       builder: (BuildContext context, ThemeState _themeState) {
@@ -234,15 +235,24 @@ class _ChatState extends State<Chat> {
                                 ? _themeState.theme.bodyColor
                                 : null,
                             child: _renderMessageRecordList(
-                              _webSocketBloc.currentState.messageHistoryWithFriend !=
+                              _webSocketBloc.currentState
+                                              .messageHistoryWithFriends !=
+                                          null &&
+                                      _webSocketBloc.currentState
+                                                  .messageHistoryWithFriends[
+                                              widget.receiverAccount] !=
                                           null &&
                                       _webSocketBloc
                                               .currentState
-                                              .messageHistoryWithFriend
+                                              .messageHistoryWithFriends[
+                                                  widget.receiverAccount]
                                               .messageHistory !=
                                           null
-                                  ? _webSocketBloc.currentState
-                                      .messageHistoryWithFriend.messageHistory
+                                  ? _webSocketBloc
+                                      .currentState
+                                      .messageHistoryWithFriends[
+                                          widget.receiverAccount]
+                                      .messageHistory
                                   : List<Message>(),
                             ),
                           ),

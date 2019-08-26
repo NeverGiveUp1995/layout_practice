@@ -1,20 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:layout_practice/modals/message/Message.dart';
 import 'package:meta/meta.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 @immutable
 abstract class WebSocketEvent {}
-
-class SetWebSocket extends WebSocketEvent {
-  WebSocketChannel channel;
-
-  SetWebSocket({@required this.channel});
-
-  @override
-  String toString() {
-    return "WEBSOCKETEVENT";
-  }
-}
 
 /**
  * 收到好友消息的操作
@@ -22,7 +11,9 @@ class SetWebSocket extends WebSocketEvent {
 class ReceivedMessageWithFriend extends WebSocketEvent {
   Message message;
 
-  ReceivedMessageWithFriend({@required this.message});
+  ReceivedMessageWithFriend({
+    @required this.message,
+  });
 
   @override
   String toString() {
@@ -41,6 +32,24 @@ class SendMessageToFriend extends WebSocketEvent {
   @override
   String toString() {
     return "SENDMESSAGETOFRIEND";
+  }
+}
+
+//初始化聊天记录的数据
+class InitChatHisStory extends WebSocketEvent {
+  BuildContext context;
+  String currentUserAccount;
+  String friendAccount;
+
+  InitChatHisStory({
+    @required this.context,
+    @required this.currentUserAccount,
+    @required this.friendAccount,
+  });
+
+  @override
+  String toString() {
+    return "INITCHAtHISTORY";
   }
 }
 

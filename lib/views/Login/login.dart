@@ -139,7 +139,7 @@ class _LoginState extends State<Login> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              "手动输入：http://192.168.",
+              "手动输入：http://",
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
@@ -152,7 +152,7 @@ class _LoginState extends State<Login> {
               child: TextField(
                 style: TextStyle(fontSize: 14),
                 decoration: InputDecoration(
-                  labelText: '后两位ip',
+                  labelText: 'ip',
                 ),
               ),
             ),
@@ -189,7 +189,7 @@ class _LoginState extends State<Login> {
                   Utils.writeContentTofile(file, item);
                   Utils.showTip(
                     context: context,
-                    tipText: "服务器已切换到http://192.168.$item",
+                    tipText: "服务器已切换到http://$item",
                     duration: 800,
                   );
                 },
@@ -205,7 +205,7 @@ class _LoginState extends State<Login> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        "http://192.168.$item",
+                        "http://$item",
                         style: TextStyle(
                           fontSize: 18,
                           color: _selectedServerIndex == index

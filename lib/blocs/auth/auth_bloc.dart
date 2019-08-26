@@ -9,7 +9,6 @@ import 'package:layout_practice/utils/Utils.dart';
 import 'package:layout_practice/utils/request.dart';
 import './bloc.dart';
 import 'package:layout_practice/blocs/auth/bloc.dart';
-import 'package:layout_practice/utils/Utils.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   @override
