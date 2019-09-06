@@ -5,12 +5,15 @@ import 'package:layout_practice/blocs/message/bloc.dart';
 import 'package:layout_practice/blocs/theme/bloc.dart';
 import 'package:layout_practice/blocs/theme/theme_bloc.dart';
 import 'package:layout_practice/blocs/webSocket/bloc.dart';
+import 'package:layout_practice/views/Chat/Chat.dart';
 import 'package:layout_practice/views/CustomTheme/CustomTheme.dart';
 import 'package:layout_practice/views/Home/Home.dart';
 import 'package:layout_practice/views/Login/login.dart';
 import 'package:layout_practice/views/Register/Register.dart';
 import 'package:layout_practice/views/settings/Settings.dart';
 import 'package:layout_practice/views/settings/ThemePage/ThemePage.dart';
+
+import 'blocs/group/group_bloc.dart';
 
 void main() => runApp(MyApp());
 
@@ -35,6 +38,9 @@ class _MyAppState extends State<MyApp> {
         ),
         BlocProvider<WebSocketBloc>(
           builder: (BuildContext context) => WebSocketBloc(),
+        ),
+        BlocProvider<GroupBloc>(
+          builder: (BuildContext context) => GroupBloc(),
         ),
       ],
       child: MaterialApp(

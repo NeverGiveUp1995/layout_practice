@@ -84,7 +84,7 @@ class TabView extends StatefulWidget {
   }
 }
 
-class TabViewState extends State<TabView> with SingleTickerProviderStateMixin {
+class TabViewState extends State<TabView> with TickerProviderStateMixin {
   ThemeBloc _themeBloc;
   TabController _tabController;
   int _selectedIndex;

@@ -23,7 +23,7 @@ class Loading extends StatefulWidget {
       tipText: this._tipText, icon: this._icon, iconRotate: this._iconRotate);
 }
 
-class _LoadingState extends State<Loading> with SingleTickerProviderStateMixin {
+class _LoadingState extends State<Loading> with TickerProviderStateMixin {
   String _tipText = "加载中...";
   Icon _icon = Icon(MyFlutterIcons.spin6); //显示的图标，默认为loading的
   bool _iconRotate = true;

@@ -19,13 +19,11 @@ class Chat extends StatefulWidget {
   String title; //当前正在聊天的对象名称（好友备注/名称,群名称）
   String receiverAccount; //当前正在聊天的对象id
   BuildContext context; //组件上下文
-  List<Message> messageListData; //聊天记录的数据
-  Chat(
-      {Key key,
-      @required this.title,
-      @required this.receiverAccount,
-      @required this.messageListData})
-      : super(key: key);
+  Chat({
+    Key key,
+    @required this.title,
+    @required this.receiverAccount,
+  }) : super(key: key);
 
   @override
   _ChatState createState() => _ChatState();

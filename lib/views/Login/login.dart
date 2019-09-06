@@ -21,6 +21,7 @@ import 'package:layout_practice/utils/consts/ServerAddresses.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:layout_practice/utils/webSocket/MessageUtils.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -187,11 +188,21 @@ class _LoginState extends State<Login> {
                   File file =
                       await Utils.getLocalFile(filename: FileNames.serverIp);
                   Utils.writeContentTofile(file, item);
-                  Utils.showTip(
-                    context: context,
-                    tipText: "服务器已切换到http://$item",
-                    duration: 800,
+                  Fluttertoast.showToast(
+                    msg: "服务器已切换到http://$item",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    timeInSecForIos: 1,
+                    backgroundColor: Colors.black12,
+                    textColor: Colors.black54,
+                    fontSize: 14.0,
                   );
+//
+//                  Utils.showTip(
+//                    context: context,
+//                    tipText: "服务器已切换到http://$item",
+//                    duration: 800,
+//                  );
                 },
                 child: Container(
                   padding:

@@ -3,12 +3,14 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:layout_practice/modals/ReseponseData/response_data_entity.dart';
 import 'package:layout_practice/modals/login_modal/login_entity.dart';
 import 'package:layout_practice/utils/Utils.dart';
 import 'package:layout_practice/utils/request.dart';
 import './bloc.dart';
 import 'package:layout_practice/blocs/auth/bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   @override
@@ -87,7 +89,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
               user: null,
               loggedIn: false,
             );
-            print("服务器正忙！稍后重试（status：${loginEntity.status}）");
+            Fluttertoast.showToast(
+              msg: "服务器正忙！稍后重试（status：${loginEntity.status}）",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIos: 1,
+              backgroundColor: Colors.black12,
+              textColor: Colors.white,
+              fontSize: 16.0,
+            );
           }
         }
       } else {

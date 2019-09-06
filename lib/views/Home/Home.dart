@@ -5,13 +5,13 @@ import 'package:layout_practice/blocs/webSocket/bloc.dart';
 import 'package:layout_practice/components/Drawers/Person/PersonDrawer.dart';
 import 'package:layout_practice/components/Header/Header.dart';
 import 'package:layout_practice/components/Tab/Tab.dart';
+import 'package:layout_practice/components/TabViews/ContactsTabView/ContactsTabView.dart';
 import 'package:layout_practice/components/TabViews/MessageListView/MessaeListView.dart';
 import 'package:layout_practice/config/my_flutter_app_icons.dart';
 import 'package:layout_practice/modals/message/Message.dart';
 import 'package:layout_practice/modals/login_modal/User.dart';
 import 'package:layout_practice/blocs/auth/bloc.dart';
 import 'package:layout_practice/blocs/theme/bloc.dart';
-
 
 import 'package:layout_practice/utils/webSocket/MessageUtils.dart';
 
@@ -35,12 +35,6 @@ class HomeState extends State<Home> {
   ThemeBloc _themeBloc;
   MessageBloc _messageBloc;
   WebSocketBloc _webSocketBloc;
-  static User currentUser = User(
-    account: '1000',
-    nickname: '夕阳醉了',
-    headerImg:
-        'http://img3.imgtn.bdimg.com/it/u=2581656380,2188867205&fm=26&gp=0.jpg',
-  );
   List<String> titles = ['消息', '联系人', '互动', '短视频'];
 
   @override
@@ -81,7 +75,6 @@ class HomeState extends State<Home> {
         backgroundColor = Color(_themeBloc.currentState.theme.mainColor.value);
       });
     }
-    print("即将渲染的消息列表${_messageBloc.currentState.messageList}");
     return BlocBuilder(
       bloc: _authBloc,
       builder: (BuildContext context, AuthState authState) {
@@ -144,85 +137,79 @@ class HomeState extends State<Home> {
                         offset: Offset(0, 50),
                         itemBuilder: (BuildContext context) =>
                             <PopupMenuItem<String>>[
-                              PopupMenuItem(
-                                value: 'A',
-                                child: Container(
-                                  child: Row(
-                                    children: <Widget>[
-                                      Container(
-                                        padding: EdgeInsets.only(right: 5),
-                                        child: Icon(
-                                          Icons.search,
-                                          color:
-                                              _themeBloc.currentState.theme !=
-                                                          null &&
-                                                      _themeBloc
-                                                              .currentState
-                                                              .theme
-                                                              .textColor !=
-                                                          null
-                                                  ? _themeBloc.currentState
-                                                      .theme.textColor
-                                                  : null,
-                                          size: 18,
-                                        ),
-                                      ),
-                                      Text(
-                                        '查找好友',
-                                        style: TextStyle(
-                                          color:
-                                              _themeBloc.currentState.theme !=
-                                                          null &&
-                                                      _themeBloc
-                                                              .currentState
-                                                              .theme
-                                                              .textColor !=
-                                                          null
-                                                  ? _themeBloc.currentState
-                                                      .theme.textColor
-                                                  : null,
-                                        ),
-                                      )
-                                    ],
+                          PopupMenuItem(
+                            value: 'A',
+                            child: Container(
+                              child: Row(
+                                children: <Widget>[
+                                  Container(
+                                    padding: EdgeInsets.only(right: 5),
+                                    child: Icon(
+                                      Icons.search,
+                                      color: _themeBloc.currentState.theme !=
+                                                  null &&
+                                              _themeBloc.currentState.theme
+                                                      .textColor !=
+                                                  null
+                                          ? _themeBloc
+                                              .currentState.theme.textColor
+                                          : null,
+                                      size: 18,
+                                    ),
+                                  ),
+                                  Text(
+                                    '查找好友',
+                                    style: TextStyle(
+                                      color: _themeBloc.currentState.theme !=
+                                                  null &&
+                                              _themeBloc.currentState.theme
+                                                      .textColor !=
+                                                  null
+                                          ? _themeBloc
+                                              .currentState.theme.textColor
+                                          : null,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 'B',
+                            child: Row(
+                              children: <Widget>[
+                                Container(
+                                  padding: EdgeInsets.only(right: 5),
+                                  child: Icon(
+                                    Icons.supervisor_account,
+                                    color:
+                                        _themeBloc.currentState.theme != null &&
+                                                _themeBloc.currentState.theme
+                                                        .textColor !=
+                                                    null
+                                            ? _themeBloc
+                                                .currentState.theme.textColor
+                                            : null,
+                                    size: 18,
                                   ),
                                 ),
-                              ),
-                              PopupMenuItem(
-                                value: 'B',
-                                child: Row(
-                                  children: <Widget>[
-                                    Container(
-                                      padding: EdgeInsets.only(right: 5),
-                                      child: Icon(
-                                        Icons.supervisor_account,
-                                        color: _themeBloc.currentState.theme !=
-                                                    null &&
+                                Text(
+                                  '创建群聊',
+                                  style: TextStyle(
+                                    color:
+                                        _themeBloc.currentState.theme != null &&
                                                 _themeBloc.currentState.theme
                                                         .textColor !=
                                                     null
                                             ? _themeBloc
                                                 .currentState.theme.textColor
                                             : null,
-                                        size: 18,
-                                      ),
-                                    ),
-                                    Text(
-                                      '创建群聊',
-                                      style: TextStyle(
-                                        color: _themeBloc.currentState.theme !=
-                                                    null &&
-                                                _themeBloc.currentState.theme
-                                                        .textColor !=
-                                                    null
-                                            ? _themeBloc
-                                                .currentState.theme.textColor
-                                            : null,
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
                         onSelected: (String action) {
                           switch (action) {
                             case 'A':
@@ -253,9 +240,7 @@ class HomeState extends State<Home> {
                                     : null,
                             themeBloc: _themeBloc,
                           ),
-                          Container(
-                            child: Text("暂未开放"),
-                          ),
+                          ContactsTabView(),
                           Container(
                             child: Text("暂未开放"),
                           ),
