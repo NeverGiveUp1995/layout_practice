@@ -53,6 +53,8 @@ class InitChatHisStory extends WebSocketEvent {
   }
 }
 
+
+
 class DisPoseSocket extends WebSocketEvent {
   @override
   String toString() {

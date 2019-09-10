@@ -7,7 +7,7 @@ class Header extends StatefulWidget {
   bool _isMan = true;
   double _borderWidth = 0.0;
   Color _borderColor;
-
+  Function onClick; //头像点击回调
   Header({
     @required width,
     @required height,
@@ -15,6 +15,7 @@ class Header extends StatefulWidget {
     isMan,
     borderWidth,
     borderColor,
+    onClick,
   }) {
     this._width = width;
     this._height = height;
@@ -33,6 +34,9 @@ class Header extends StatefulWidget {
       this._borderColor = Colors.white;
     } else {
       this._borderColor = borderColor;
+    }
+    if (onClick != null) {
+      this.onClick = onClick;
     }
   }
 
@@ -88,9 +92,17 @@ class _Header extends State<Header> {
         ),
       ),
       child: ClipOval(
-        child: RenderHeaderImg(
-          imgSrc: _imgSrc,
-          isMan: _isMan,
+        child: Stack(
+          children: <Widget>[
+            RenderHeaderImg(
+              imgSrc: _imgSrc,
+              isMan: _isMan,
+            ),
+            FlatButton(
+              onPressed: widget.onClick,
+              child: Container(),
+            ),
+          ],
         ),
       ),
     );

@@ -17,7 +17,6 @@ class MessageHistoryWithFriendState extends WebSocketState {
 
   MessageHistoryWithFriendState(
       {@required messageHistoryWithFriend, @required friendAccount}) {
-    print("聊天数据更新了：$messageHistoryWithFriend");
     messageHistoryWithFriends[friendAccount] = messageHistoryWithFriend;
   }
 }

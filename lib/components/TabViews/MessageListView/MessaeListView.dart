@@ -40,7 +40,6 @@ class MessageListView extends StatelessWidget {
         this._messageBloc.currentState.messageList != null) {
       messageList = this._messageBloc.currentState.messageList;
     }
-    print("渲染的列表$messageList");
     if (messageList != null && messageList.length > 0) {
       for (int i = 0;
           i < this._messageBloc.currentState.messageList.length;
@@ -176,31 +175,60 @@ class MessageListView extends StatelessWidget {
                   color: _themeBloc.currentState.theme != null
                       ? _themeBloc.currentState.theme.bodyColor
                       : null,
-                  child: RefreshIndicator(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                          minHeight: Utils.getScreenSize().height),
-                      child: ListView(
-                        physics: AlwaysScrollableScrollPhysics(),
-                        children: this
-                            ._renderMessageList(_authBloc, _themeBloc, context),
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        padding: EdgeInsets.all(15),
+                        color: Colors.white,
+                        child: Container(
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Color(0xaaefefef),
+                            borderRadius: BorderRadius.all(Radius.circular(25)),
+                          ),
+                          child: TextField(
+                            cursorColor: _themeState.theme.textFieldCursorColor,
+                            cursorWidth: 1.5,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: "搜索好友",
+                            ),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.black26),
+                          ),
+                        ),
                       ),
-                    ),
-                    onRefresh: () {
-                      Future<String> result = null;
-                      result = Future.delayed(Duration(), () {
-                        if (authState != null &&
-                            authState.user != null &&
-                            authState.user.account != null) {
-                          print("正在重新获取消息列表");
-                          _messageBloc
-                              .dispatch(GetMessageList(authState.user.account));
-                        } else {
-                          print("当前用户未知，无法刷新");
-                        }
-                      });
-                      return result;
-                    },
+                      Expanded(
+                          flex: 1,
+                          child: Container(
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                  minHeight: Utils.getScreenSize().height - 40),
+                              child: RefreshIndicator(
+                                child: ListView(
+                                  physics: AlwaysScrollableScrollPhysics(),
+                                  children: _renderMessageList(
+                                      _authBloc, _themeBloc, context),
+                                ),
+                                onRefresh: () {
+                                  Future<String> result =
+                                      Future.delayed(Duration(), () {
+                                    if (authState != null &&
+                                        authState.user != null &&
+                                        authState.user.account != null) {
+                                      print("正在重新获取消息列表");
+                                      _messageBloc.dispatch(GetMessageList(
+                                          authState.user.account));
+                                    } else {
+                                      print("当前用户未知，无法刷新");
+                                    }
+                                  });
+                                  return result;
+                                },
+                              ),
+                            ),
+                          ))
+                    ],
                   ),
                 );
               },

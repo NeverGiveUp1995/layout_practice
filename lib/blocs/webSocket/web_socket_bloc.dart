@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:layout_practice/blocs/message/bloc.dart';
-import 'package:layout_practice/modals/ReseponseData/response_data_entity.dart';
 import 'package:layout_practice/modals/message/Message.dart';
 import 'package:layout_practice/modals/message/MessageHistoryWithFriend.dart';
 import 'package:layout_practice/modals/message/message_list_entity.dart';
@@ -14,6 +12,7 @@ import 'package:layout_practice/utils/consts/FileNames.dart';
 import 'package:layout_practice/utils/request.dart';
 import 'package:layout_practice/utils/webSocket/MessageUtils.dart';
 import './bloc.dart';
+import 'package:layout_practice/utils/Utils.dart';
 
 class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
   @override
@@ -90,7 +89,7 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
             chatHistoryFile, messageHistoryWithFriend.toString());
       } catch (e) {
         print("写入文件出错-----数据写入文件的时候出现了异常");
-      }
+      } //判断程序是否处于后台运行的状态，如果是后台运行，则通过通知栏消息，给出提示，如果不是，则不给出
       //4.设置与当前好友的消息记录到状态
       yield MessageHistoryWithFriendState(
         //注意：因为此事件是  好友--》发送消息--》自己，所以此时，好友作为sender，自己作为receiver

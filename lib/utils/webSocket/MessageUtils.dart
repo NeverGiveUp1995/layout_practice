@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:layout_practice/blocs/notice/bloc.dart';
 import 'package:layout_practice/blocs/webSocket/bloc.dart';
 import 'package:layout_practice/modals/ServerIp.dart';
 import 'package:layout_practice/modals/message/Message.dart';
@@ -33,6 +34,7 @@ class MessageUtils {
             "=======================================收到服务器发来的消息:==============================================");
         print('$data\n\n');
         WebSocketBloc webSocketBloc = Provider.of<WebSocketBloc>(context);
+        NoticeBloc noticeBloc = Provider.of<NoticeBloc>(context);
         SingleMessageResultEntity singleMessageResultEntity =
             SingleMessageResultEntity.fromJson(json.decode(data));
         Message message = singleMessageResultEntity.data;
@@ -42,6 +44,16 @@ class MessageUtils {
         print(message);
         if (singleMessageResultEntity.msgType == "1") {
           webSocketBloc.dispatch(ReceivedMessageWithFriend(message: message));
+          noticeBloc.dispatch(
+            PublishNotice(
+              isShow: true,
+              noticeId: 0,
+              senderAccount: message.sender.account,
+              senderName: message.sender.nickName,
+              content: message.content,
+              imgSrc: message.sender.headerImg,
+            ),
+          );
         }
       }
 
@@ -64,8 +76,8 @@ class MessageUtils {
   static void sendMessage(String receiverAccount, String message) {
     _webSocket.add('${receiverAccount}-${message}');
   }
-//
-//  // 手机状态栏弹出推送的消息
+
+// 手机状态栏弹出推送的消息
 //  static void _createNotification(String title, String content) async {
 //    await LocalNotifications.createNotification(
 //      id: _id,

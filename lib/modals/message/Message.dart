@@ -20,16 +20,12 @@ class Message {
   });
 
   Message.fromJson(Map<String, dynamic> json) {
-    print(
-        "================================================Message----fromJson()");
     messageId = json['messageId'];
     conversationId = json['conversationId'];
     sender = User.fromJson(json['sender']);
     receiver = User.fromJson(json['receiver']);
     sendTime = json['sendTime'];
     content = json['content'];
-    print(
-        "================================================Message----fromJson()");
   }
 
   Map<String, dynamic> toJson() {

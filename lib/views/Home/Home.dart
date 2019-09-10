@@ -16,7 +16,6 @@ import 'package:layout_practice/blocs/theme/bloc.dart';
 import 'package:layout_practice/utils/webSocket/MessageUtils.dart';
 
 class Home extends StatefulWidget {
-  GlobalKey _key = GlobalKey();
   BuildContext context;
 
   Home({@required this.context});
@@ -28,6 +27,7 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
+  GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
   String _pageTitle;
   Color backgroundColor = Color.fromARGB(1, 223, 235, 240); //主页背景色
   Color fontColor = Colors.black54; //字体颜色
@@ -102,6 +102,10 @@ class HomeState extends State<Home> {
                           ? _authBloc.currentState.user.headerImg
                           : null,
                       isMan: true,
+                      onClick: () {
+                        print("调用了。。。。");
+                        Scaffold.of(context).openDrawer();
+                      },
                     ),
                     title: Text(
                       _pageTitle, //页面标题
