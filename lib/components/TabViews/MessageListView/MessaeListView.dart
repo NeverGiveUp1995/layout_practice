@@ -64,11 +64,13 @@ class MessageListView extends StatelessWidget {
                 child: Row(
                   children: <Widget>[
                     Header(
-                        width: 60.00,
-                        height: 60.00,
-                        borderColor: Color(0x00000000),
-                        borderWidth: 0.0,
-                        imgSrc: targetUser.headerImg),
+                      width: 60.00,
+                      height: 60.00,
+                      borderColor: Color(0x00000000),
+                      borderWidth: 0.0,
+                      imgSrc: targetUser.headerImg,
+                      padding: 6.0,
+                    ),
                     Expanded(
                       flex: 1,
                       child: Container(
@@ -172,29 +174,31 @@ class MessageListView extends StatelessWidget {
               bloc: _messageBloc,
               builder: (BuildContext context, MessageState messageState) {
                 return Container(
-                  color: _themeBloc.currentState.theme != null
-                      ? _themeBloc.currentState.theme.bodyColor
+                  color: _themeState.theme != null
+                      ? _themeState.theme.bodyColor
                       : null,
                   child: Column(
                     children: <Widget>[
                       Container(
                         padding: EdgeInsets.all(15),
-                        color: Colors.white,
+                        color: _themeState.theme != null
+                            ? _themeState.theme.bodyColor
+                            : null,
                         child: Container(
                           height: 40,
                           decoration: BoxDecoration(
                             color: Color(0xaaefefef),
                             borderRadius: BorderRadius.all(Radius.circular(25)),
                           ),
-                          child: TextField(
-                            cursorColor: _themeState.theme.textFieldCursorColor,
-                            cursorWidth: 1.5,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: "搜索好友",
-                            ),
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.black26),
+                          child: SizedBox.expand(
+                            child: FlatButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(context, '/searchFriend');
+                                },
+                                child: Text(
+                                  '搜索好友',
+                                  style: TextStyle(color: Colors.black26),
+                                )),
                           ),
                         ),
                       ),

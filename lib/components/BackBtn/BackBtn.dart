@@ -8,18 +8,20 @@ class BackBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _themeBloc = BlocProvider.of<ThemeBloc>(context);
-    return SizedBox(
-      width: 50,
-      height: 50,
-      child: ClipOval(
-        child: FlatButton(
-          onPressed: () => Navigator.pop(context),
-          child: Icon(
-            Icons.arrow_back_ios,
-            color: _themeBloc.currentState.theme != null &&
-                    _themeBloc.currentState.theme.titleBarTextColor != null
-                ? _themeBloc.currentState.theme.titleBarTextColor
-                : null,
+    return UnconstrainedBox(
+      child: SizedBox.fromSize(
+        size: Size(50.0, 50.0),
+        child: ClipOval(
+          child: FlatButton(
+            onPressed: () => Navigator.pop(context),
+            child: Icon(
+              Icons.arrow_back_ios,
+              color: _themeBloc.currentState.theme != null &&
+                      _themeBloc.currentState.theme.titleBarTextColor != null
+                  ? _themeBloc.currentState.theme.titleBarTextColor
+                  : null,
+              size: 18,
+            ),
           ),
         ),
       ),

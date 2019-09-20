@@ -16,7 +16,6 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
   ) async* {
     if (event is GetGroups) {
       //如果是获取分组的事件，发送请求，获取分组
-
       var response = await NetServer.request(
         api: '/friend/getGroupsByUserAccount',
         method: 'post',
@@ -27,7 +26,7 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
       if (groupsEntity.data != null) {
         yield Groups(groups: groupsEntity.data);
       }
-      print("获取结果：$groupsEntity");
+      print("获取到分组结果：$groupsEntity");
     }
   }
 }

@@ -33,7 +33,7 @@ class PersonDrawer extends StatelessWidget {
                   flex: 1,
                   child: Container(
                     child: Image.network(
-                      "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1563789415399&di=646c60c73836159b5dee307548b47974&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201511%2F14%2F20151114184017_Y582J.thumb.700_0.jpeg",
+                      "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1568895608867&di=9406daff7d0bda92ef953a04c46a7497&imgtype=0&src=http%3A%2F%2Fn.sinaimg.cn%2Fsinacn10113%2F704%2Fw1024h1280%2F20190521%2F92ce-hxhyium8625781.jpg",
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -77,8 +77,8 @@ class PersonDrawer extends StatelessWidget {
                                         width: 120.0,
                                         height: 120.0,
                                         isMan: true,
-                                        borderColor: Color(0x00000000),
-                                        borderWidth: 0.0,
+                                        borderColor: Colors.white,
+                                        borderWidth: 3.0,
                                         imgSrc:
                                             _authBloc.currentState.user != null
                                                 ? _authBloc

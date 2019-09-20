@@ -27,7 +27,7 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
-  GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String _pageTitle;
   Color backgroundColor = Color.fromARGB(1, 223, 235, 240); //主页背景色
   Color fontColor = Colors.black54; //字体颜色
@@ -86,6 +86,7 @@ class HomeState extends State<Home> {
               builder:
                   (BuildContext messagecontext, MessageState messageState) {
                 return Scaffold(
+                  key: _scaffoldKey,
                   appBar: AppBar(
                     centerTitle: true,
 //        设置阴影辐射范围
@@ -98,13 +99,13 @@ class HomeState extends State<Home> {
                       height: 30.0,
                       borderColor: Color(0x00000000),
                       borderWidth: 0.0,
+                      padding: 6.0,
                       imgSrc: _authBloc.currentState.user != null
                           ? _authBloc.currentState.user.headerImg
                           : null,
                       isMan: true,
                       onClick: () {
-                        print("调用了。。。。");
-                        Scaffold.of(context).openDrawer();
+                        _scaffoldKey.currentState.openDrawer();
                       },
                     ),
                     title: Text(

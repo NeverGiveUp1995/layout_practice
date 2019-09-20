@@ -11,6 +11,7 @@ class User {
   String sex = "1"; //性别：1：男；2：女
   String birthday; //出生日期
   String address; //地址
+  String chatBgImgSrc; //聊天背景图片地址
   User(
       {@required account,
       nickname,

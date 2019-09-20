@@ -138,6 +138,6 @@ class Utils {
       if (callback != null) {
         callback();
       }
-    }, duration != null ? duration : 500);
+    }, duration != null ? duration : 1000);
   }
 }

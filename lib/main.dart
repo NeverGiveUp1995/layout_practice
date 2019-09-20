@@ -18,9 +18,11 @@ import 'package:layout_practice/views/Register/Register.dart';
 import 'package:layout_practice/views/settings/Settings.dart';
 import 'package:layout_practice/views/settings/ThemePage/ThemePage.dart';
 
+import 'blocs/friend/friend_bloc.dart';
 import 'blocs/group/group_bloc.dart';
 import 'blocs/notice/notice_bloc.dart';
 import 'components/NoticationFrame/NoticationFrame.dart';
+import 'views/SearchFriend/SearchFriend.dart';
 
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
@@ -57,6 +59,9 @@ class _MyAppState extends State<MyApp> {
         BlocProvider<GroupBloc>(
           builder: (BuildContext context) => GroupBloc(),
         ),
+        BlocProvider<FriendBloc>(
+          builder: (BuildContext context) => FriendBloc(),
+        ),
       ],
       child: MaterialApp(
         title: 'weTalk',
@@ -83,6 +88,7 @@ class _MyAppState extends State<MyApp> {
           '/settings/theme/custom_theme': (context) => NotificationFrame(
                 child: CustomTheme(),
               ),
+          '/searchFriend': (context) => SearchFriend(),
         },
       ),
     );

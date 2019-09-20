@@ -7,16 +7,17 @@ class Header extends StatefulWidget {
   bool _isMan = true;
   double _borderWidth = 0.0;
   Color _borderColor;
+  double _padding = 0.0;
   Function onClick; //头像点击回调
-  Header({
-    @required width,
-    @required height,
-    @required imgSrc,
-    isMan,
-    borderWidth,
-    borderColor,
-    onClick,
-  }) {
+  Header(
+      {@required width,
+      @required height,
+      @required imgSrc,
+      isMan,
+      borderWidth,
+      borderColor,
+      onClick,
+      padding}) {
     this._width = width;
     this._height = height;
     this._imgSrc = imgSrc;
@@ -38,56 +39,32 @@ class Header extends StatefulWidget {
     if (onClick != null) {
       this.onClick = onClick;
     }
+    if (padding != null) {
+      this._padding = padding;
+    }
   }
 
   @override
   State<StatefulWidget> createState() {
-    return _Header(
-      width: _width,
-      height: _height,
-      imgSrc: _imgSrc,
-      isMan: _isMan,
-      borderWidth: _borderWidth,
-      borderColor: _borderColor,
-    );
+    return _Header();
   }
 }
 
 class _Header extends State<Header> {
-  double _width = 100;
-  double _height = 100;
-  String _imgSrc = "";
-  bool _isMan = true;
   Color _borderColor = Colors.white;
   double _borderWidth = 0.0;
-
-  _Header({
-    @required width,
-    @required height,
-    @required imgSrc,
-    isMan,
-    borderWidth,
-    borderColor,
-  }) {
-    this._width = width;
-    this._height = height;
-    this._imgSrc = imgSrc;
-    this._isMan = isMan;
-    this._borderWidth = borderWidth;
-    this._borderColor = borderColor;
-  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: _width,
-      height: _height,
-      padding: EdgeInsets.all(8.00),
+      width: widget._width,
+      height: widget._height,
+      padding: EdgeInsets.all(widget._padding),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(_width)),
+        borderRadius: BorderRadius.all(Radius.circular(widget._width)),
         border: Border.all(
-          color: _borderColor,
-          width: _borderWidth,
+          color: widget._borderColor,
+          width: widget._borderWidth,
           style: BorderStyle.solid,
         ),
       ),
@@ -95,8 +72,8 @@ class _Header extends State<Header> {
         child: Stack(
           children: <Widget>[
             RenderHeaderImg(
-              imgSrc: _imgSrc,
-              isMan: _isMan,
+              imgSrc: widget._imgSrc,
+              isMan: widget._isMan,
             ),
             FlatButton(
               onPressed: widget.onClick,
@@ -111,7 +88,7 @@ class _Header extends State<Header> {
 
 class RenderHeaderImg extends StatefulWidget {
   String _imgSrc;
-  bool _isMan;
+  bool _isMan = true;
 
   /*
    * 构造器
@@ -125,32 +102,15 @@ class RenderHeaderImg extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return _RenderHeaderImg(imgSrc: _imgSrc, isMan: _isMan);
+    return _RenderHeaderImg();
   }
 }
 
 class _RenderHeaderImg extends State<RenderHeaderImg> {
-  String _imgSrc;
-  bool _isMan = true;
-
-  /*
-   * 构造器
-   * @imgSrc:头像地址
-   * @isMan：是否是男性
-   */
-  _RenderHeaderImg({imgSrc, isMan}) {
-    this._imgSrc = imgSrc;
-    if (isMan == null) {
-      this._isMan = true;
-    } else {
-      this._isMan = isMan;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (_imgSrc == null) {
-      if (_isMan == null || _isMan) {
+    if (widget._imgSrc == null) {
+      if (widget._isMan) {
         return Image.asset(
           "images/headerImg-man.png",
           fit: BoxFit.cover,
@@ -165,7 +125,7 @@ class _RenderHeaderImg extends State<RenderHeaderImg> {
       Image image;
       try {
         image = Image.network(
-          _imgSrc,
+          widget._imgSrc,
           fit: BoxFit.cover,
         );
       } catch (e) {

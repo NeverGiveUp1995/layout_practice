@@ -24,7 +24,7 @@ class AllThemes {
       titleBarTextColor: Colors.black54,
       bodyColor: Color(0x000e0e0e),
       bottomColor: Colors.white,
-      personDrawerBgColor: Color(0xaa898989),
+      personDrawerBgColor: Color(0xefffffff),
       textColor: Colors.black38,
       tipModalBgColor: Colors.black54,
       tipModalTextColor: Colors.black12,

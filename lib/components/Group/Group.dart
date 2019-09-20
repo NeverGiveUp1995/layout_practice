@@ -64,7 +64,7 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
     _themeBloc = BlocProvider.of<ThemeBloc>(context);
     return BlocBuilder(
       bloc: _themeBloc,
-      builder: (BuildContext context, ThemeState state) {
+      builder: (BuildContext context, ThemeState _themeState) {
         return Container(
           child: Column(
             children: <Widget>[
@@ -87,15 +87,30 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
                           angle: math.pi * (animation.value / 180),
                           child: Icon(
                             Icons.arrow_right,
-                            color: Colors.black38,
+                            color: _themeState.theme != null
+                                ? _themeState.theme.textColor
+                                : null,
                           ),
                         ),
                         Expanded(
                           flex: 1,
-                          child: Text(widget.groupName),
+                          child: Text(
+                            widget.groupName,
+                            style: TextStyle(
+                              color: _themeState.theme != null
+                                  ? _themeState.theme.textColor
+                                  : null,
+                            ),
+                          ),
                         ),
                         Text(
-                            '${widget.onlineFriendNum}/${widget.totalFriendNum}'),
+                          '${widget.onlineFriendNum}/${widget.totalFriendNum}',
+                          style: TextStyle(
+                            color: _themeState.theme != null
+                                ? _themeState.theme.textColor
+                                : null,
+                          ),
+                        ),
                       ],
                     ),
                   )),
@@ -141,7 +156,9 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
                                                       color: Colors.black54),
                                                 ),
                                                 Text(
-                                                  friendItem.online ? "[在线]" : '[离线]',
+                                                  friendItem.online
+                                                      ? "[在线]"
+                                                      : '[离线]',
                                                   style: TextStyle(
                                                       color: Colors.black26),
                                                 ),

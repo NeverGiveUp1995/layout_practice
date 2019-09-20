@@ -66,11 +66,16 @@ class _ContactsTabViewState extends State<ContactsTabView>
           bloc: _groupBloc,
           builder: (BuildContext context, GroupState groupState) {
             return Container(
+              color: _themeState.theme != null
+                  ? _themeState.theme.bodyColor
+                  : null,
               child: Column(
                 children: <Widget>[
                   Container(
                     padding: EdgeInsets.all(15),
-                    color: Colors.white,
+                    color: _themeState.theme != null
+                        ? _themeState.theme.bodyColor
+                        : null,
                     child: Container(
                       height: 40,
                       decoration: BoxDecoration(
@@ -91,14 +96,20 @@ class _ContactsTabViewState extends State<ContactsTabView>
                   ),
                   Container(
                     margin: EdgeInsets.only(top: 15),
-                    color: Colors.white,
+                    color: _themeState.theme != null
+                        ? _themeState.theme.bodyColor
+                        : null,
                     child: TabBar(controller: _tabController, tabs: tabNames),
                   ),
                   Expanded(
                     flex: 1,
                     child: Container(
                       margin: EdgeInsets.only(top: 5),
-                      decoration: BoxDecoration(color: Colors.white),
+                      decoration: BoxDecoration(
+                        color: _themeState.theme != null
+                            ? _themeState.theme.bodyColor
+                            : null,
+                      ),
                       child: TabBarView(
                         controller: _tabController,
                         children: tabNames
