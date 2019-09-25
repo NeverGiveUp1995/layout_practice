@@ -10,9 +10,11 @@ abstract class WebSocketEvent {}
  */
 class ReceivedMessageWithFriend extends WebSocketEvent {
   Message message;
+  BuildContext context;
 
   ReceivedMessageWithFriend({
     @required this.message,
+    @required this.context,
   });
 
   @override
@@ -26,8 +28,9 @@ class ReceivedMessageWithFriend extends WebSocketEvent {
  */
 class SendMessageToFriend extends WebSocketEvent {
   Message message;
+  BuildContext context;
 
-  SendMessageToFriend({@required this.message});
+  SendMessageToFriend({@required this.message, @required this.context});
 
   @override
   String toString() {
@@ -52,8 +55,6 @@ class InitChatHisStory extends WebSocketEvent {
     return "INITCHAtHISTORY";
   }
 }
-
-
 
 class DisPoseSocket extends WebSocketEvent {
   @override

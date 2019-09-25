@@ -7,6 +7,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart'; /
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:layout_practice/blocs/auth/bloc.dart';
 import 'package:layout_practice/blocs/message/bloc.dart';
+import 'package:layout_practice/blocs/systemNotify/bloc.dart';
 import 'package:layout_practice/blocs/theme/bloc.dart';
 import 'package:layout_practice/blocs/theme/theme_bloc.dart';
 import 'package:layout_practice/blocs/webSocket/bloc.dart';
@@ -23,6 +24,7 @@ import 'blocs/group/group_bloc.dart';
 import 'blocs/notice/notice_bloc.dart';
 import 'components/NoticationFrame/NoticationFrame.dart';
 import 'views/SearchFriend/SearchFriend.dart';
+import 'views/SystemNotify/SystemNotify.dart';
 
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
@@ -62,6 +64,9 @@ class _MyAppState extends State<MyApp> {
         BlocProvider<FriendBloc>(
           builder: (BuildContext context) => FriendBloc(),
         ),
+        BlocProvider<SystemNotifyBloc>(
+          builder: (BuildContext context) => SystemNotifyBloc(),
+        ),
       ],
       child: MaterialApp(
         title: 'weTalk',
@@ -89,6 +94,7 @@ class _MyAppState extends State<MyApp> {
                 child: CustomTheme(),
               ),
           '/searchFriend': (context) => SearchFriend(),
+          "/systemNotify": (Context) => SystemNotify(),
         },
       ),
     );

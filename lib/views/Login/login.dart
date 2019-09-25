@@ -242,7 +242,7 @@ class _LoginState extends State<Login> {
     _webSocketBloc = BlocProvider.of<WebSocketBloc>(context);
 
     print("准备清空数据");
-    _messageBloc.dispatch(ClearMessageState());
+    _messageBloc.dispatch(ClearMessageStateEvent());
     return BlocBuilder(
       bloc: _authBloc,
       builder: (BuildContext context, AuthState _authState) {

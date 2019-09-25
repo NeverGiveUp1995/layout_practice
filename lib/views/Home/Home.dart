@@ -59,8 +59,8 @@ class HomeState extends State<Home> {
     if (_authBloc.currentState.user != null &&
         _authBloc.currentState.user.account != null &&
         _messageBloc.currentState.messageList == null) {
-      _messageBloc
-          .dispatch(GetMessageList(_authBloc.currentState.user.account));
+      _messageBloc.dispatch(
+          GetMessageList(userAccount: _authBloc.currentState.user.account));
     }
     if (_themeBloc.currentState.theme != null &&
         _themeBloc.currentState.theme.textColor.value != fontColor.value) {

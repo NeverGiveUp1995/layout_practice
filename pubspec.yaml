@@ -47,6 +47,8 @@ dev_dependencies:
   fluttertoast: ^3.1.0
   #用于通知栏显示通知的库
   flutter_local_notifications: ^0.8.2
+  #时间格式转换工具
+  intl: ^0.16.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec

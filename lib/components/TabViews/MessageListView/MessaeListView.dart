@@ -18,28 +18,35 @@ class MessageListView extends StatelessWidget {
     this._themeBloc = themeBloc;
   }
 
-  _openChatPage(BuildContext context, String nickName, String userAccount) {
-    print("正在跳转到与$nickName的聊天页面");
+  _openChatPage(BuildContext context, String nickName, String userAccount,
+      String msgType) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => Chat(
           title: nickName,
           receiverAccount: userAccount,
+          msgType: msgType,
         ),
       ),
     );
   }
 
+  _openSystemNotifyPage(BuildContext context) {
+    Navigator.pushNamed(context, '/systemNotify');
+  }
+
   List<Widget> _renderMessageList(
       AuthBloc _authBloc, ThemeBloc _themeBloc, BuildContext context) {
     List<Widget> messages = [];
-    List<Message> messageList = List<Message>();
+    //使用多态，渲染多种类的消息列表
+    List<Object> messageList = List<Object>();
     if (this._messageBloc != null &&
         this._messageBloc.currentState != null &&
         this._messageBloc.currentState.messageList != null) {
       messageList = this._messageBloc.currentState.messageList;
     }
+
     if (messageList != null && messageList.length > 0) {
       for (int i = 0;
           i < this._messageBloc.currentState.messageList.length;
@@ -53,61 +60,64 @@ class MessageListView extends StatelessWidget {
         } else {
           targetUser = item.receiver;
         }
-        messages.add(
-          FlatButton(
-            color: Color(0x00000000),
-            onPressed: () =>
-                _openChatPage(context, targetUser.nickName, targetUser.account),
-            child: Container(
-                height: 65.0,
-                padding: EdgeInsets.all(3),
-                child: Row(
-                  children: <Widget>[
-                    Header(
-                      width: 60.00,
-                      height: 60.00,
-                      borderColor: Color(0x00000000),
-                      borderWidth: 0.0,
-                      imgSrc: targetUser.headerImg,
-                      padding: 6.0,
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: Container(
-                        padding: EdgeInsets.fromLTRB(0, 5, 10, 5),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
+        if (item is Message) {
+          String msgType = item.msgType;
+          Function onPressButton;
+          String userName;
+          String msgContent;
+          switch (msgType) {
+            case "1":
+              userName = "系统消息";
+              msgContent = "您有一条新的通知";
+              onPressButton = () => _openSystemNotifyPage(context);
+              break;
+            case "2":
+              onPressButton = () => _openChatPage(context, targetUser.nickName,
+                  targetUser.account, item.msgType);
+              userName = targetUser.remark != null
+                  ? targetUser.remark //备注优先显示
+                  : targetUser.nickName ?? "未知用户名称";
+              msgContent = item.content ?? '';
+              break;
+            case "3":
+              break;
+          }
+          messages.add(
+            FlatButton(
+              color: Color(0x00000000),
+              onPressed: onPressButton,
+              child: Container(
+                  height: 65.0,
+                  padding: EdgeInsets.all(3),
+                  child: Row(
+                    children: <Widget>[
+                      Header(
+                        width: 60.00,
+                        height: 60.00,
+                        borderColor: Color(0x00000000),
+                        borderWidth: 0.0,
+                        imgSrc: targetUser.headerImg,
+                        padding: 6.0,
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          padding: EdgeInsets.fromLTRB(0, 5, 10, 5),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
 //                          昵称，或者备注，消息时间
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
 //                                昵称、备注
-                                Text(
-                                  targetUser.remark != null
-                                      ? targetUser.remark //备注优先显示
-                                      : targetUser.nickName,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color:
-                                        _themeBloc.currentState.theme != null &&
-                                                _themeBloc.currentState.theme
-                                                        .textColor !=
-                                                    null
-                                            ? _themeBloc
-                                                .currentState.theme.textColor
-                                            : null,
-                                  ),
-                                ),
-//                                消息时间
-                                Opacity(
-                                  opacity: .5,
-                                  child: Text(
-                                    item.sendTime != null ? item.sendTime : '',
-                                    textAlign: TextAlign.end,
+                                  Text(
+                                    userName,
                                     style: TextStyle(
+                                      fontSize: 16,
                                       color: _themeBloc.currentState.theme !=
                                                   null &&
                                               _themeBloc.currentState.theme
@@ -116,44 +126,62 @@ class MessageListView extends StatelessWidget {
                                           ? _themeBloc
                                               .currentState.theme.textColor
                                           : null,
-                                      fontSize: 12,
                                     ),
                                   ),
-                                )
-                              ],
-                            ),
-//                          消息内容（预览）
-                            Opacity(
-                              opacity: .5,
-                              child: Container(
-                                padding: EdgeInsets.only(top: 3, right: 15),
-                                child: Text(
-                                  item.content != null ? item.content : '.',
-                                  textAlign: TextAlign.start,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color:
-                                        _themeBloc.currentState.theme != null &&
+//                                消息时间
+                                  Opacity(
+                                    opacity: .5,
+                                    child: Text(
+                                      item.sendTime ?? "",
+                                      textAlign: TextAlign.end,
+                                      style: TextStyle(
+                                        color: _themeBloc.currentState.theme !=
+                                                    null &&
                                                 _themeBloc.currentState.theme
                                                         .textColor !=
                                                     null
                                             ? _themeBloc
                                                 .currentState.theme.textColor
                                             : null,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+//                          消息内容（预览）
+                              Opacity(
+                                opacity: .5,
+                                child: Container(
+                                  padding: EdgeInsets.only(top: 3, right: 15),
+                                  child: Text(
+                                    msgContent,
+                                    textAlign: TextAlign.start,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: _themeBloc.currentState.theme !=
+                                                  null &&
+                                              _themeBloc.currentState.theme
+                                                      .textColor !=
+                                                  null
+                                          ? _themeBloc
+                                              .currentState.theme.textColor
+                                          : null,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            )
-                          ],
+                              )
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                )),
-          ),
-        );
+                    ],
+                  )),
+            ),
+          );
+        }
       }
     }
     return messages;
@@ -222,7 +250,7 @@ class MessageListView extends StatelessWidget {
                                         authState.user.account != null) {
                                       print("正在重新获取消息列表");
                                       _messageBloc.dispatch(GetMessageList(
-                                          authState.user.account));
+                                          userAccount: authState.user.account));
                                     } else {
                                       print("当前用户未知，无法刷新");
                                     }

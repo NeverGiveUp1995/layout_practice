@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 class Header extends StatefulWidget {
-  double _width = 100;
-  double _height = 100;
+  dynamic _width = 100;
+  dynamic _height = 100;
   String _imgSrc = null;
   bool _isMan = true;
-  double _borderWidth = 0.0;
+  dynamic _borderWidth = 0.0;
   Color _borderColor;
-  double _padding = 0.0;
+  dynamic _padding = 0.0;
   Function onClick; //头像点击回调
   Header(
       {@required width,
@@ -18,18 +18,20 @@ class Header extends StatefulWidget {
       borderColor,
       onClick,
       padding}) {
-    this._width = width;
-    this._height = height;
     this._imgSrc = imgSrc;
+    if (width != null) {
+      this._width = width * 1.0;
+    }
+    if (height != null) {
+      this._height = height * 1.0;
+    }
     if (isMan == null) {
       this._isMan = true;
     } else {
       this._isMan = isMan;
     }
-    if (borderWidth == null) {
-      this._borderWidth = 0.0;
-    } else {
-      this._borderWidth = borderWidth;
+    if (borderWidth != null) {
+      this._borderWidth = borderWidth * 1.0;
     }
     if (borderColor == null) {
       this._borderColor = Colors.white;
@@ -40,7 +42,7 @@ class Header extends StatefulWidget {
       this.onClick = onClick;
     }
     if (padding != null) {
-      this._padding = padding;
+      this._padding = padding * 1.0;
     }
   }
 

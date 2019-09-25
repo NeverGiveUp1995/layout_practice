@@ -12,6 +12,7 @@ import 'package:layout_practice/components/BackBtn/BackBtn.dart';
 import 'package:layout_practice/components/Header/Header.dart';
 import 'package:layout_practice/modals/user/user_entity.dart';
 import 'package:layout_practice/utils/Utils.dart';
+import 'package:layout_practice/views/AddFriend/AddFriend.dart';
 
 class PersonalDetails extends StatefulWidget {
   String userAccount; //用户账号
@@ -381,9 +382,15 @@ class _PersonalDetailsState extends State<PersonalDetails> {
                                                 padding: EdgeInsets.fromLTRB(
                                                     15, 0, 15, 5),
                                                 child: Text(
-                                                  authState.user.account ==
+                                                  authState.user != null &&
                                                           friendState
-                                                              .userData.account
+                                                                  .userData !=
+                                                              null &&
+                                                          authState.user
+                                                                  .account ==
+                                                              friendState
+                                                                  .userData
+                                                                  .account
                                                       ? "我的相册"
                                                       : '他的相册',
                                                   style: TextStyle(
@@ -503,9 +510,16 @@ class _PersonalDetailsState extends State<PersonalDetails> {
                                         onPressed: widget.isFriend
                                             ? replaceRoute
                                             : () {
-                                                addFriend(
-                                                    authState.user.account,
-                                                    context);
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            AddFriend(
+                                                              user: widget
+                                                                      .user ??
+                                                                  friendState
+                                                                      .userData,
+                                                            )));
                                               },
                                         child: Text(
                                           item["label"],

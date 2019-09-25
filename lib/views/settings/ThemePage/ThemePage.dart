@@ -166,7 +166,7 @@ class _ThmeItems extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<Widget> _themeWidgets = List();
-    _authBloc = Provider.of<AuthBloc>(context);
+    _authBloc = BlocProvider.of<AuthBloc>(context);
     double _width = 50.0;
     double _height = 50.0;
     if (_themes != null && _themes.length > 0) {

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:layout_practice/blocs/notice/bloc.dart';
 import 'package:layout_practice/blocs/webSocket/bloc.dart';
 import 'package:layout_practice/modals/ServerIp.dart';
@@ -33,8 +34,8 @@ class MessageUtils {
         print(
             "=======================================收到服务器发来的消息:==============================================");
         print('$data\n\n');
-        WebSocketBloc webSocketBloc = Provider.of<WebSocketBloc>(context);
-        NoticeBloc noticeBloc = Provider.of<NoticeBloc>(context);
+        WebSocketBloc webSocketBloc = BlocProvider.of<WebSocketBloc>(context);
+        NoticeBloc noticeBloc = BlocProvider.of<NoticeBloc>(context);
         SingleMessageResultEntity singleMessageResultEntity =
             SingleMessageResultEntity.fromJson(json.decode(data));
         Message message = singleMessageResultEntity.data;
@@ -43,7 +44,8 @@ class MessageUtils {
         print(singleMessageResultEntity);
         print(message);
         if (singleMessageResultEntity.msgType == "1") {
-          webSocketBloc.dispatch(ReceivedMessageWithFriend(message: message));
+          webSocketBloc.dispatch(
+              ReceivedMessageWithFriend(message: message, context: context));
           noticeBloc.dispatch(
             PublishNotice(
               isShow: true,
@@ -71,10 +73,12 @@ class MessageUtils {
 
   /**
    * // 向服务器发送消息
-   * @param:receiverAccount,告诉服务器将该消息发送给哪个用户
+   * @param:receiverAccount,告诉服务器将该消息发送给哪个用户,
+   * @param:msgType1:系统消息；2:私人消息，3.群组消息
    */
-  static void sendMessage(String receiverAccount, String message) {
-    _webSocket.add('${receiverAccount}-${message}');
+  static void sendMessage(
+      String receiverAccount, String message, String msgType) {
+    _webSocket.add('${msgType}-${receiverAccount}-${message}');
   }
 
 // 手机状态栏弹出推送的消息

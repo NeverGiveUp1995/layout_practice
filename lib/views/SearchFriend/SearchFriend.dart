@@ -23,6 +23,7 @@ class _SearchFriendState extends State<SearchFriend> {
   Widget build(BuildContext context) {
     _themeBloc = BlocProvider.of<ThemeBloc>(context);
     _friendBloc = BlocProvider.of<FriendBloc>(context);
+
     return BlocBuilder(
       bloc: _themeBloc,
       builder: (BuildContext context, ThemeState _themeState) {
@@ -110,7 +111,17 @@ class _SearchFriendState extends State<SearchFriend> {
                                         String imgSrc = userResul.user != null
                                             ? userResul.user.headerImg
                                             : null;
-
+                                        int age = userResul.user.birthday !=
+                                                    null &&
+                                                userResul.user.birthday != "" &&
+                                                userResul.user.birthday
+                                                        .split('-')[0] !=
+                                                    null
+                                            ? DateTime.now().year -
+                                                int.parse(userResul
+                                                    .user.birthday
+                                                    .split('-')[0])
+                                            : 0;
                                         return FlatButton(
                                           onPressed: () {
                                             Navigator.push(
@@ -187,6 +198,17 @@ class _SearchFriendState extends State<SearchFriend> {
                                                                         .black38),
                                                               ),
                                                             ),
+                                                            Container(
+                                                                padding: EdgeInsets
+                                                                    .only(
+                                                                        right:
+                                                                            10),
+                                                                child: Text(
+                                                                  "$age岁",
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .black38),
+                                                                )),
                                                             Container(
                                                               child: Text(
                                                                 address,

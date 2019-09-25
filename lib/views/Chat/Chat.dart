@@ -20,11 +20,13 @@ class Chat extends StatefulWidget {
   @required
   String title; //当前正在聊天的对象名称（好友备注/名称,群名称）
   String receiverAccount; //当前正在聊天的对象id
+  String msgType; //消息类型：1.系统消息，2.私人消息，3.群组消息,
   BuildContext context; //组件上下文
   Chat({
     Key key,
     @required this.title,
     @required this.receiverAccount,
+    @required this.msgType,
   }) : super(key: key);
 
   @override
@@ -52,9 +54,10 @@ class _ChatState extends State<Chat> {
   }
 
   /**
-   * 发送消息的方法
+   * 发送消息的方法,
+   * msgType:消息类型：0：系统消息；1：私人消息，2：群组消息
    */
-  void _sendMessage(WebSocketBloc webSocketBloc) {
+  void _sendMessage(WebSocketBloc webSocketBloc, String msgType) {
     String msg = _controller.text;
     if (msg.isNotEmpty) {
       print("马上发送消息给${widget.receiverAccount}：${msg}");
@@ -67,7 +70,10 @@ class _ChatState extends State<Chat> {
             ),
             sender: _authBloc.currentState.user,
             content: msg,
+            sendTime: Utils.getCurrentTimeString(),
+            msgType: msgType,
           ),
+          context: context,
         ),
       );
       print("发送完毕！");
@@ -201,9 +207,9 @@ class _ChatState extends State<Chat> {
 
   @override
   Widget build(BuildContext context) {
-    _authBloc = Provider.of<AuthBloc>(context);
-    _themeBloc = Provider.of<ThemeBloc>(context);
-    _webSocketBloc = Provider.of<WebSocketBloc>(context);
+    _authBloc = BlocProvider.of<AuthBloc>(context);
+    _themeBloc = BlocProvider.of<ThemeBloc>(context);
+    _webSocketBloc = BlocProvider.of<WebSocketBloc>(context);
 
     MessageUtils.connect(_authBloc.currentState.user.account, context);
     //判断聊天blo0里面是否有当前聊天对象的数据，如果没有，从本地文件中获取数据，并初始化
@@ -279,7 +285,7 @@ class _ChatState extends State<Chat> {
                           children: <Widget>[
                             Expanded(
                               flex: 1,
-//                聊天记录面板
+                              //        聊天记录面板
                               child: Container(
                                 decoration: BoxDecoration(
                                   color: Color(0x00ffffff),
@@ -371,7 +377,8 @@ class _ChatState extends State<Chat> {
                                             ? Colors.white
                                             : Color(0xeeefefef),
                                         onPressed: _controller.text.isNotEmpty
-                                            ? () => _sendMessage(_webSocketBloc)
+                                            ? () => _sendMessage(
+                                                _webSocketBloc, widget.msgType)
                                             : null,
                                         child: Text(
                                           '发送',

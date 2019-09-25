@@ -13,6 +13,7 @@ import 'package:path_provider/path_provider.dart'; //引入通知插件库
 
 class NotificationFrame extends StatefulWidget {
   Widget child;
+  String msgType; //消息类型
 
   NotificationFrame({this.child});
 
@@ -70,6 +71,7 @@ class _NotificationFrameState extends State<NotificationFrame> {
                   builder: (context) => Chat(
                     receiverAccount: senderAccount,
                     title: senderName,
+                    msgType: widget.msgType,
                   ),
                 ),
               );
@@ -95,6 +97,7 @@ class _NotificationFrameState extends State<NotificationFrame> {
           builder: (context) => Chat(
             receiverAccount: senderAccount,
             title: senderName,
+            msgType: widget.msgType,
           ),
         ),
       );

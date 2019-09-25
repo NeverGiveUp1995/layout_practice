@@ -3,6 +3,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:layout_practice/blocs/auth/bloc.dart';
+import 'package:layout_practice/blocs/message/bloc.dart';
+import 'package:layout_practice/blocs/systemNotify/bloc.dart';
+import 'package:layout_practice/modals/login_modal/User.dart';
 import 'package:layout_practice/modals/message/Message.dart';
 import 'package:layout_practice/modals/message/MessageHistoryWithFriend.dart';
 import 'package:layout_practice/modals/message/message_list_entity.dart';
@@ -63,15 +68,44 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
                 创建文件，并且将与当前的用户聊天的数据写入，并且将数据更新到bloc状态中
    */
     if (event is ReceivedMessageWithFriend) {
+      MessageBloc messageBloc = BlocProvider.of<MessageBloc>(event.context);
+      SystemNotifyBloc systemNotifyBloc =
+          BlocProvider.of<SystemNotifyBloc>(event.context);
+      AuthBloc authBloc = BlocProvider.of<AuthBloc>(event.context);
+
       MessageHistoryWithFriend messageHistoryWithFriend =
           MessageHistoryWithFriend(messageHistory: List<Message>());
+      User receiver = event.message.receiver;
+      User sender = event.message.sender;
       //1.获取与该用户的缓存文件
-      File chatHistoryFile = await Utils.getLocalFile(
-        currentLoginUserAccount: event.message.receiver.account,
-        folderName:
-            '${CacheFolderNames.friends}/${event.message.sender.account}',
-        filename: '${FileNames.chatHistory}',
-      );
+      File chatHistoryFile;
+      //如果消息类型是【私人消息：msgType = 1】
+      switch (event.message.msgType) {
+        case "1": //【系统消息】
+          chatHistoryFile = await Utils.getLocalFile(
+            currentLoginUserAccount: receiver.account,
+            folderName: '${CacheFolderNames.system}/${sender.account}',
+            filename: '${FileNames.chatHistory}',
+          );
+          systemNotifyBloc.dispatch(GetSystemNotify(
+              context: event.context,
+              userAccount: authBloc.currentState.user.account));
+          break;
+        case "2": //【私人消息】
+          chatHistoryFile = await Utils.getLocalFile(
+            currentLoginUserAccount: receiver.account,
+            folderName: '${CacheFolderNames.friends}/${sender.account}',
+            filename: '${FileNames.chatHistory}',
+          );
+          break;
+        case "3": //【群消息】
+          chatHistoryFile = await Utils.getLocalFile(
+            currentLoginUserAccount: receiver.account,
+            folderName: '${CacheFolderNames.groups}/${sender.account}',
+            filename: '${FileNames.chatHistory}',
+          );
+      }
+
       //2.将缓存文件中的数据读取出来并且转换成对应的实体类
       String chatHistoryData = await Utils.readContentFromFile(chatHistoryFile);
       if (chatHistoryData != null) {
@@ -84,6 +118,9 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
       }
       //3.将收到的最新数据插入到消息记录中
       messageHistoryWithFriend.messageHistory.insert(0, event.message);
+      //将新消息简略略信息放在消息列表页中
+      messageBloc.dispatch(AddNewMessageEvent(message: event.message));
+
       try {
         Utils.writeContentTofile(
             chatHistoryFile, messageHistoryWithFriend.toString());
@@ -93,7 +130,7 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
       //4.设置与当前好友的消息记录到状态
       yield MessageHistoryWithFriendState(
         //注意：因为此事件是  好友--》发送消息--》自己，所以此时，好友作为sender，自己作为receiver
-        friendAccount: event.message.sender.account,
+        friendAccount: sender.account,
         messageHistoryWithFriend: messageHistoryWithFriend,
       );
     }
@@ -101,13 +138,13 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
     //=============================================================【发送聊天信息的事件】==========================================================================
 
     /*
-     *发送消息：
+     *发送消息给朋友或者是群组：
      *      ----1.将消息存入缓存的同时把当前聊天的好友的聊天记录状态更新
      */
     if (event is SendMessageToFriend) {
+      MessageBloc messageBloc = BlocProvider.of<MessageBloc>(event.context);
       MessageHistoryWithFriend messageHistoryWithFriend =
           MessageHistoryWithFriend(messageHistory: List<Message>());
-      print("\n\n正在获取聊天记录文件\n");
       //1.获取与该用户的缓存文件
       File chatHistoryFile = await Utils.getLocalFile(
         currentLoginUserAccount: event.message.sender.account,
@@ -115,10 +152,8 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
             '${CacheFolderNames.friends}/${event.message.receiver.account}',
         filename: '${FileNames.chatHistory}',
       );
-      print("获取到的文件==========>：\n$chatHistoryFile");
       //2.将缓存文件中的数据读取出来并且转换成对应的实体类
       String chatHistoryData = await Utils.readContentFromFile(chatHistoryFile);
-      print("===========文件中读取的数据========\n$chatHistoryData");
       if (chatHistoryData != null) {
         try {
           print("解码出来的json数据：${json.decode(chatHistoryData)}");
@@ -128,16 +163,12 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
           print("从json数据转换到实体类出错-----与当前好友还没有任何聊天记录或者聊天记录数据被破坏");
         }
       }
-      print("即将要添加的列表:\n${messageHistoryWithFriend.messageHistory}");
       //3.将收到的最新数据插入到消息记录中
       messageHistoryWithFriend.messageHistory.insert(0, event.message);
-      try {
-        print("准备将聊天记录写入文件中....:\n${messageHistoryWithFriend.toString()}");
-        Utils.writeContentTofile(
-            chatHistoryFile, messageHistoryWithFriend.toString());
-      } catch (e) {
-        print("写入文件出错-----数据写入文件的时候出现了异常");
-      }
+      Utils.writeContentTofile(
+          chatHistoryFile, messageHistoryWithFriend.toString());
+      //将新消息简略略信息放在消息列表页中
+      messageBloc.dispatch(AddNewMessageEvent(message: event.message));
       //4.设置与当前好友的消息记录到状态
       yield MessageHistoryWithFriendState(
         //注意：因为此事件是  自己--》发送消息--》好友，所以此时，好友作为receiver，自己作为sender
@@ -148,6 +179,7 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
       MessageUtils.sendMessage(
         event.message.receiver.account,
         event.message.content,
+        event.message.msgType,
       );
     }
     //=============================================================【初始化聊天记录事件】==========================================================================

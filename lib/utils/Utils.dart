@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
-
+import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:layout_practice/modals/message/Message.dart';
@@ -47,11 +47,13 @@ class Utils {
       String content = await (await file).readAsString();
       print("\n读取文件方法：读取数据：$content\n");
       return content;
-    } on FileSystemException {
-      CupertinoDialog(
-        child: Text('读取文件发生异常!!'),
-      );
-      print("读取文件发生异常!!");
+    } catch (e) {
+      if (e is FileSystemException) {
+        CupertinoDialog(
+          child: Text('读取文件发生异常!!'),
+        );
+        print("读取文件发生异常!!");
+      }
       return null;
     }
   }
@@ -61,7 +63,14 @@ class Utils {
    */
   static Future<Null> writeContentTofile(File file, String writeContent) async {
     print("即将将数据写入文件。。。。：$writeContent");
-    await file.writeAsString(writeContent);
+    try {
+      return await file.writeAsString(writeContent);
+    } catch (e) {
+      CupertinoDialog(
+        child: Text('数据写入失败!!'),
+      );
+      return null;
+    }
   }
 
   static Size getScreenSize() {
@@ -139,5 +148,14 @@ class Utils {
         callback();
       }
     }, duration != null ? duration : 1000);
+  }
+
+  /**
+   *
+   */
+  static String getCurrentTimeString() {
+    DateTime now = DateTime.now();
+    DateFormat formatter = DateFormat('yyyy-MM-dd hh:mm:ss');
+    return formatter.format(now);
   }
 }

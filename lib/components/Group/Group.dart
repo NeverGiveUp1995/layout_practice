@@ -129,6 +129,7 @@ class _GroupState extends State<Group> with TickerProviderStateMixin {
                                                     title: friendItem.nickName,
                                                     receiverAccount:
                                                         friendItem.account,
+                                                    msgType: "2",
                                                   )));
                                     },
                                     child: Container(

@@ -9,6 +9,7 @@ class Message {
   User receiver; //收件人
   String sendTime; //发送时间
   String content; //信息内容
+  String msgType; //消息类型【1：系统消息,2：私人消息，3：群消息：；待添加】
 
   Message({
     this.messageId,
@@ -17,6 +18,7 @@ class Message {
     @required this.receiver,
     this.sendTime,
     @required this.content,
+    @required this.msgType,
   });
 
   Message.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class Message {
     receiver = User.fromJson(json['receiver']);
     sendTime = json['sendTime'];
     content = json['content'];
+    msgType = json['msgType'];
   }
 
   Map<String, dynamic> toJson() {
@@ -36,6 +39,7 @@ class Message {
     data['receiver'] = this.receiver;
     data['sendTime'] = this.sendTime;
     data['content'] = this.content;
+    data['msgType'] = this.msgType;
     return data;
   }
 }
